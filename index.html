@@ -33,10 +33,8 @@
         .room-info h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 700; word-break: break-word; }
         .room-users { font-size: 11px; color: #888; display: flex; align-items: center; gap: 6px; font-weight: 500; margin-top: 5px; }
         .user-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; display: inline-block; }
-        
         .btn-create-room { width: 100%; background: transparent; border: 2px dashed #ccc; color: #666; padding: 15px; border-radius: 16px; font-weight: 700; cursor: pointer; }
         
-        /* Botões de Admin */
         .lobby-actions { display: flex; gap: 8px; margin-left: 10px; }
         .btn-action-lobby { border: none; padding: 8px; border-radius: 8px; cursor: pointer; z-index: 2; font-size: 16px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
         .btn-edit-room { background: #eaf6ff; color: var(--edit); }
@@ -48,28 +46,43 @@
         .btn-back { background: #ddd; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .room-title-display { font-size: 16px; font-weight: 800; text-transform: uppercase; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* MINHA COMANDA */
+        /* CARD ADICIONAR */
         .card-expand { background: var(--bg-card); border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
         .card-header { padding: 15px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; }
         .card-body { max-height: 0; opacity: 0; padding: 0 18px; transition: all 0.3s; visibility: hidden; }
         .card-expand.open .card-body { max-height: 250px; opacity: 1; padding-bottom: 18px; visibility: visible; }
         
         .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
-        input { 
-            width: 100%; border: 1px solid #E0E0E0; background: #F8F8F8; border-radius: 8px; padding: 10px; font-size: 15px; outline: none; 
-            box-sizing: border-box; 
-        }
+        input { width: 100%; border: 1px solid #E0E0E0; background: #F8F8F8; border-radius: 8px; padding: 10px; font-size: 15px; outline: none; box-sizing: border-box; }
         .btn-add { width: 100%; background: var(--bfr-black); color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
 
+        /* LISTA COMPACTA */
         ul { list-style: none; padding: 0; margin: 0; }
-        li { background: white; padding: 14px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--bfr-black); box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .item-row { display: flex; justify-content: space-between; align-items: center; }
-        .item-nome { font-weight: 700; font-size: 16px; word-break: break-word; }
+        li { background: white; padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid var(--bfr-black); box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        
+        .item-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .item-info { flex-grow: 1; min-width: 0; } /* min-width 0 ajuda no text-overflow se precisar */
+        .item-nome { font-weight: 700; font-size: 15px; word-break: break-word; line-height: 1.2; }
+        .item-price { color: #666; font-size: 12px; margin-top: 2px; }
 
-        .edit-input { padding: 5px; font-size: 14px; margin-bottom: 5px; border: 1px solid #333; width: 100%; border-radius: 6px; }
-        .controles-group { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
-        .qtd-controls { display: flex; gap: 5px; align-items: center; background: #f0f0f0; padding: 3px; border-radius: 6px; }
-        .action-controls { display: flex; gap: 5px; margin-top: 5px; }
+        /* Controles Compactos */
+        .controls-wrapper { display: flex; align-items: center; gap: 8px; }
+        .total-price { font-weight: 800; font-size: 15px; min-width: 60px; text-align: right; }
+        
+        .action-block { display: flex; align-items: center; background: #f4f4f4; border-radius: 8px; padding: 2px; }
+        
+        .qtd-btn { width: 28px; height: 28px; border: none; background: transparent; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .qtd-display { font-size: 14px; font-weight: 600; min-width: 20px; text-align: center; }
+
+        .arrow-stack { display: flex; flex-direction: column; gap: 1px; margin-left: 2px; border-left: 1px solid #ddd; padding-left: 2px; }
+        .arrow-btn { width: 24px; height: 14px; border: none; background: #fff; font-size: 8px; cursor: pointer; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #555; }
+        .arrow-btn:active { background: #ddd; }
+
+        .btn-edit-icon { border: none; background: transparent; font-size: 16px; color: #888; cursor: pointer; padding: 5px; margin-left: 5px; }
+
+        /* Edição */
+        .edit-input { padding: 5px; font-size: 14px; margin-bottom: 5px; border: 1px solid #333; width: 100%; border-radius: 6px; box-sizing: border-box; }
+        .btn-save { background: var(--bfr-black); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; width: 100%; }
 
         /* RANKING */
         .rank-card { background: white; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #f0f0f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
@@ -89,9 +102,6 @@
         /* DOCK */
         .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; background: var(--bfr-black); color: white; padding: 12px 20px; border-radius: 14px; display: none; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; }
         .total-value { font-size: 20px; font-weight: 700; }
-        .btn-icon { background: #eee; border:none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; min-width: 30px; display: flex; align-items: center; justify-content: center; }
-        .btn-icon.small { padding: 2px 6px; font-size: 10px; height: 20px; }
-        .btn-save { background: var(--bfr-black); color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; }
         .btn-trash-dock { background: #333; color: #ff6b6b; border: none; padding: 8px; border-radius: 8px; font-size: 18px; cursor: pointer; }
     </style>
 </head>
@@ -175,8 +185,8 @@
         }
         document.getElementById('userStatus').innerText = `Olá, ${user.name}`;
 
-        let currentRoomId = null;   // UUID
-        let currentRoomName = null; // Nome
+        let currentRoomId = null;   
+        let currentRoomName = null; 
         let roomItems = [];
         let visaoAtual = 'minha';
         let itensEmEdicao = {};
@@ -192,6 +202,8 @@
         }
 
         // --- LOBBY ---
+        function sanitizarId(texto) { return texto.trim().replace(/[^a-zA-Z0-9 ]/g, "-").replace(/\s+/g, " "); }
+
         async function carregarLobby() {
             mostrarTela('lobby');
             const listaDiv = document.getElementById('roomsList');
@@ -242,13 +254,8 @@
             if (senha !== SENHA_MESTRA) return alert("Senha incorreta.");
             const nomeInput = prompt("Nome da Sala:");
             if (!nomeInput) return;
-            
             const { data, error } = await supabaseClient.from('rooms').insert({ name: nomeInput }).select();
-            
-            if (error) {
-                console.error(error);
-                alert("Erro ao criar sala.");
-            } else {
+            if (error) { console.error(error); alert("Erro ao criar sala."); } else {
                 user.isAdmin = true;
                 localStorage.setItem('fz_user', JSON.stringify(user));
                 entrarNaSala(data[0].id, data[0].name);
@@ -257,7 +264,7 @@
 
         async function excluirSala(roomId, event) {
             event.stopPropagation();
-            if(!confirm(`ADMIN: Apagar esta sala? (Ação irreversível)`)) return;
+            if(!confirm(`ADMIN: Apagar esta sala?`)) return;
             await supabaseClient.from('rooms').delete().eq('id', roomId);
             carregarLobby();
         }
@@ -266,20 +273,16 @@
             event.stopPropagation();
             const novoNome = prompt("Renomear sala para:", oldName);
             if (!novoNome || novoNome === oldName) return;
-
             const { error } = await supabaseClient.from('rooms').update({ name: novoNome }).eq('id', roomId);
-            if(error) alert("Erro ao renomear.");
-            else carregarLobby();
+            if(error) alert("Erro ao renomear."); else carregarLobby();
         }
 
         // --- SALA ---
         function entrarNaSala(roomId, roomName) {
             currentRoomId = roomId;
             currentRoomName = roomName;
-            
             localStorage.setItem('fz_current_room_id', roomId);
             localStorage.setItem('fz_current_room_name', roomName);
-            
             document.getElementById('roomTitle').innerText = roomName;
             mostrarTela('room');
             
@@ -308,6 +311,9 @@
             let totalMinha = 0;
             let totalGeral = 0;
             const usersMap = {};
+            
+            // Filtra meus itens e garante que eles estejam ordenados pela data (para as setas funcionarem na ordem certa)
+            // A ordem já vem do banco, mas em operações otimistas (subir/descer), roomItems é alterado localmente.
             const meusItens = roomItems.filter(i => i.user_id === user.id);
             const totalItens = meusItens.length;
 
@@ -318,54 +324,60 @@
                 usersMap[item.user_id].items.push(item);
             });
 
-            // MINHA COMANDA
+            // --- MINHA COMANDA (UI OTIMISTA E COMPACTA) ---
             meusItens.forEach((item, index) => {
                 totalMinha += (item.preco * item.qtd);
                 const isEditing = itensEmEdicao[item.id];
-                let conteudo = '', controles = '';
 
                 if (isEditing) {
-                    conteudo = `
-                        <input type="text" class="edit-input" id="edit-nome-${item.id}" value="${item.nome}">
-                        <input type="text" class="edit-input" id="edit-preco-${item.id}" value="${(item.preco * 100).toFixed(0)}" inputmode="numeric" oninput="mascaraMoeda(this)">
-                        <button class="btn-save" onclick="salvarEdicao(${item.id})">Salvar</button>`;
+                    listaMinha.innerHTML += `
+                        <li>
+                            <div class="item-row" style="flex-direction: column; align-items: stretch;">
+                                <input type="text" class="edit-input" id="edit-nome-${item.id}" value="${item.nome}">
+                                <input type="text" class="edit-input" id="edit-preco-${item.id}" value="${(item.preco * 100).toFixed(0)}" inputmode="numeric" oninput="mascaraMoeda(this)">
+                                <button class="btn-save" onclick="salvarEdicao(${item.id})">Salvar</button>
+                            </div>
+                        </li>`;
                 } else {
-                    conteudo = `<div class="item-nome">${item.nome}</div><div style="color:#666; font-size:13px;">${item.qtd}x ${BRL.format(item.preco)}</div>`;
                     let arrows = '';
                     if(totalItens > 1) {
                         const showUp = index > 0 ? 'visible' : 'hidden';
                         const showDown = index < totalItens - 1 ? 'visible' : 'hidden';
-                        
-                        // CORREÇÃO DO ERRO: Verificação segura para evitar undefined
-                        const idAnterior = index > 0 ? meusItens[index - 1].id : null;
-                        const idProximo = index < totalItens - 1 ? meusItens[index + 1].id : null;
-
-                        arrows = `<div style="display:flex; flex-direction:column; gap:2px;">
-                                    <button class="btn-icon small" style="visibility:${showUp}" onclick="trocarOrdem(${item.id}, ${idAnterior})">▲</button>
-                                    <button class="btn-icon small" style="visibility:${showDown}" onclick="trocarOrdem(${item.id}, ${idProximo})">▼</button>
-                                  </div>`;
+                        // Passamos o ID diretamente, sem depender do indice anterior/proximo ser lido aqui
+                        arrows = `
+                            <div class="arrow-stack">
+                                <button class="arrow-btn" style="visibility:${showUp}" onclick="trocarOrdem('${item.id}', 'UP')">▲</button>
+                                <button class="arrow-btn" style="visibility:${showDown}" onclick="trocarOrdem('${item.id}', 'DOWN')">▼</button>
+                            </div>`;
                     }
-                    controles = `<div class="action-controls">${arrows}<button class="btn-icon" onclick="ativarEdicao(${item.id})">✎</button></div>`;
-                }
 
-                listaMinha.innerHTML += `
-                    <li>
-                        <div class="item-row">
-                            <div style="flex-grow:1; padding-right:10px;">${conteudo}</div>
-                            <div class="controles-group">
-                                <div style="font-weight:700;">${BRL.format(item.preco * item.qtd)}</div>
-                                <div class="qtd-controls">
-                                    <button class="btn-icon" onclick="alterarQtd(${item.id}, ${item.qtd - 1})">-</button>
-                                    <span style="font-size:14px; min-width:15px; text-align:center;">${item.qtd}</span>
-                                    <button class="btn-icon" onclick="alterarQtd(${item.id}, ${item.qtd + 1})">+</button>
+                    listaMinha.innerHTML += `
+                        <li>
+                            <div class="item-row">
+                                <div class="item-info">
+                                    <div class="item-nome">${item.nome}</div>
+                                    <div class="item-price">${item.qtd}x ${BRL.format(item.preco)}</div>
                                 </div>
-                                ${controles}
+                                
+                                <div class="controls-wrapper">
+                                    <div class="total-price">${BRL.format(item.preco * item.qtd)}</div>
+                                    
+                                    <div class="action-block">
+                                        <button class="qtd-btn" onclick="alterarQtd(${item.id}, ${item.qtd - 1})">-</button>
+                                        <div class="qtd-display">${item.qtd}</div>
+                                        <button class="qtd-btn" onclick="alterarQtd(${item.id}, ${item.qtd + 1})">+</button>
+                                        
+                                        ${arrows}
+                                    </div>
+
+                                    <button class="btn-edit-icon" onclick="ativarEdicao(${item.id})">✎</button>
+                                </div>
                             </div>
-                        </div>
-                    </li>`;
+                        </li>`;
+                }
             });
 
-            // RANKING
+            // --- RANKING ---
             const rankingArray = Object.values(usersMap).sort((a, b) => b.total - a.total);
             if (rankingArray.length === 0) listaRanking.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">Mesa vazia.</div>';
             else {
@@ -403,7 +415,8 @@
         function toggleDetails(id) { document.getElementById(id).classList.toggle('show'); }
         function mudarVisao(v) { visaoAtual = v; document.getElementById('btnMinha').classList.toggle('active', v === 'minha'); document.getElementById('btnRanking').classList.toggle('active', v === 'ranking'); document.getElementById('visaoMinha').style.display = v === 'minha' ? 'block' : 'none'; document.getElementById('visaoRanking').style.display = v === 'ranking' ? 'block' : 'none'; renderizarTudo(); }
 
-        // CRUD
+        // --- AÇÕES CRUD OTIMISTAS ---
+
         async function adicionar() {
             const nomeInput = document.getElementById('nome');
             const precoInput = document.getElementById('preco');
@@ -413,6 +426,7 @@
             const qtd = parseInt(qtdInput.value) || 1;
 
             if(nome && preco > 0) {
+                // Insere no banco (Realtime vai atualizar a tela sozinho)
                 await supabaseClient.from('comandas').insert({ room_id: currentRoomId, user_id: user.id, user_name: user.name, nome, preco, qtd });
                 nomeInput.value = ''; precoInput.value = ''; qtdInput.value = '1';
                 toggleForm();
@@ -420,8 +434,23 @@
         }
 
         async function alterarQtd(id, novaQtd) {
-            if(novaQtd <= 0) { if(confirm("Remover item?")) await supabaseClient.from('comandas').delete().eq('id', id); } 
-            else await supabaseClient.from('comandas').update({ qtd: novaQtd }).eq('id', id);
+            if(novaQtd <= 0) {
+                if(confirm("Remover item?")) {
+                    // UI OTIMISTA: Remove localmente AGORA
+                    roomItems = roomItems.filter(i => i.id !== id);
+                    renderizarTudo();
+                    // Depois avisa o banco
+                    await supabaseClient.from('comandas').delete().eq('id', id);
+                }
+            } else {
+                // UI OTIMISTA: Atualiza localmente AGORA
+                const item = roomItems.find(i => i.id === id);
+                if(item) {
+                    item.qtd = novaQtd;
+                    renderizarTudo();
+                }
+                await supabaseClient.from('comandas').update({ qtd: novaQtd }).eq('id', id);
+            }
         }
 
         function ativarEdicao(id) { itensEmEdicao[id] = true; renderizarTudo(); }
@@ -429,21 +458,49 @@
             const nomeNovo = document.getElementById(`edit-nome-${id}`).value;
             const precoNovo = parseFloat(document.getElementById(`edit-preco-${id}`).value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
             if(nomeNovo && precoNovo > 0) {
-                await supabaseClient.from('comandas').update({ nome: nomeNovo, preco: precoNovo }).eq('id', id);
+                const item = roomItems.find(i => i.id === id);
+                if(item) { item.nome = nomeNovo; item.preco = precoNovo; } // Otimista
                 delete itensEmEdicao[id];
+                renderizarTudo();
+                await supabaseClient.from('comandas').update({ nome: nomeNovo, preco: precoNovo }).eq('id', id);
             }
         }
 
-        async function trocarOrdem(id1, id2) {
-            if (!id1 || !id2) return; // Segurança extra
-            const item1 = roomItems.find(i => i.id === id1);
-            const item2 = roomItems.find(i => i.id === id2);
-            await supabaseClient.from('comandas').update({ created_at: item2.created_at }).eq('id', id1);
-            await supabaseClient.from('comandas').update({ created_at: item1.created_at }).eq('id', id2);
+        async function trocarOrdem(currentId, direction) {
+            // UI OTIMISTA DE TROCA
+            const myItems = roomItems.filter(i => i.user_id === user.id); // Já estão ordenados por data
+            const currentIndex = myItems.findIndex(i => i.id === parseInt(currentId));
+            
+            if (currentIndex === -1) return;
+
+            const targetIndex = direction === 'UP' ? currentIndex - 1 : currentIndex + 1;
+            if (targetIndex < 0 || targetIndex >= myItems.length) return;
+
+            const itemA = myItems[currentIndex];
+            const itemB = myItems[targetIndex];
+
+            // 1. Troca as datas na memória (SWAP)
+            const tempDate = itemA.created_at;
+            itemA.created_at = itemB.created_at;
+            itemB.created_at = tempDate;
+
+            // 2. Reordena o array principal global baseado nas novas datas
+            roomItems.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            
+            // 3. Renderiza instantaneamente
+            renderizarTudo();
+
+            // 4. Salva no banco (troca as datas)
+            await supabaseClient.from('comandas').update({ created_at: itemA.created_at }).eq('id', itemA.id);
+            await supabaseClient.from('comandas').update({ created_at: itemB.created_at }).eq('id', itemB.id);
         }
 
         async function limparMinhaComanda() {
-            if(confirm("Apagar toda a sua comanda?")) await supabaseClient.from('comandas').delete().eq('room_id', currentRoomId).eq('user_id', user.id);
+            if(confirm("Apagar toda a sua comanda?")) {
+                roomItems = roomItems.filter(i => i.user_id !== user.id);
+                renderizarTudo();
+                await supabaseClient.from('comandas').delete().eq('room_id', currentRoomId).eq('user_id', user.id);
+            }
         }
 
         // UTIL
