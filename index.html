@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="data:,">
     <title>Firezone Hub</title>
     <style>
         @font-face { font-family: 'Aptos'; src: local('Aptos'), local('Aptos Display'), local('Segoe UI'), local('-apple-system'); }
@@ -175,7 +176,7 @@
         document.getElementById('userStatus').innerText = `Olá, ${user.name}`;
 
         let currentRoomId = null;   // UUID
-        let currentRoomName = null; // Nome de Exibição
+        let currentRoomName = null; // Nome
         let roomItems = [];
         let visaoAtual = 'minha';
         let itensEmEdicao = {};
@@ -206,7 +207,6 @@
             }
 
             rooms.forEach(room => {
-                // Filtra usuários ativos baseados no room_id (UUID)
                 const uniqueUsers = new Set((activeUsers || []).filter(u => u.room_id === room.id).map(u => u.user_id)).size;
                 
                 let adminActions = '';
@@ -221,7 +221,6 @@
 
                 const div = document.createElement('div');
                 div.className = 'room-card';
-                // Passamos o ID (UUID) e o NAME para a função entrar
                 div.onclick = () => entrarNaSala(room.id, room.name);
                 div.innerHTML = `
                     <div class="room-info" style="flex-grow:1;">
@@ -238,15 +237,12 @@
             });
         }
 
-        // NOVA LÓGICA DE CRIAÇÃO (UUID é auto-generated)
         async function criarSalaAdmin() {
             const senha = prompt("Senha de Admin:");
             if (senha !== SENHA_MESTRA) return alert("Senha incorreta.");
             const nomeInput = prompt("Nome da Sala:");
             if (!nomeInput) return;
             
-            // Inserimos apenas o nome. O ID (UUID) é gerado pelo banco.
-            // .select() retorna o objeto criado (com o ID novo)
             const { data, error } = await supabaseClient.from('rooms').insert({ name: nomeInput }).select();
             
             if (error) {
@@ -255,7 +251,6 @@
             } else {
                 user.isAdmin = true;
                 localStorage.setItem('fz_user', JSON.stringify(user));
-                // Entra usando o ID e Nome retornados
                 entrarNaSala(data[0].id, data[0].name);
             }
         }
@@ -267,7 +262,6 @@
             carregarLobby();
         }
 
-        // NOVA LÓGICA DE RENOMEAR (Update simples)
         async function editarNomeSala(roomId, oldName, event) {
             event.stopPropagation();
             const novoNome = prompt("Renomear sala para:", oldName);
@@ -289,7 +283,6 @@
             document.getElementById('roomTitle').innerText = roomName;
             mostrarTela('room');
             
-            // Escuta o UUID
             supabaseClient.channel('room_changes')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'comandas', filter: `room_id=eq.${roomId}` }, 
                 () => buscarItens())
@@ -299,7 +292,6 @@
         }
 
         async function buscarItens() {
-            // Busca usando o UUID
             const { data } = await supabaseClient.from('comandas').select('*').eq('room_id', currentRoomId).order('created_at', { ascending: true });
             if(data) {
                 roomItems = data;
@@ -343,9 +335,14 @@
                     if(totalItens > 1) {
                         const showUp = index > 0 ? 'visible' : 'hidden';
                         const showDown = index < totalItens - 1 ? 'visible' : 'hidden';
+                        
+                        // CORREÇÃO DO ERRO: Verificação segura para evitar undefined
+                        const idAnterior = index > 0 ? meusItens[index - 1].id : null;
+                        const idProximo = index < totalItens - 1 ? meusItens[index + 1].id : null;
+
                         arrows = `<div style="display:flex; flex-direction:column; gap:2px;">
-                                    <button class="btn-icon small" style="visibility:${showUp}" onclick="trocarOrdem(${item.id}, ${meusItens[index-1].id})">▲</button>
-                                    <button class="btn-icon small" style="visibility:${showDown}" onclick="trocarOrdem(${item.id}, ${meusItens[index+1].id})">▼</button>
+                                    <button class="btn-icon small" style="visibility:${showUp}" onclick="trocarOrdem(${item.id}, ${idAnterior})">▲</button>
+                                    <button class="btn-icon small" style="visibility:${showDown}" onclick="trocarOrdem(${item.id}, ${idProximo})">▼</button>
                                   </div>`;
                     }
                     controles = `<div class="action-controls">${arrows}<button class="btn-icon" onclick="ativarEdicao(${item.id})">✎</button></div>`;
@@ -416,7 +413,6 @@
             const qtd = parseInt(qtdInput.value) || 1;
 
             if(nome && preco > 0) {
-                // Inserimos com o currentRoomId (UUID)
                 await supabaseClient.from('comandas').insert({ room_id: currentRoomId, user_id: user.id, user_name: user.name, nome, preco, qtd });
                 nomeInput.value = ''; precoInput.value = ''; qtdInput.value = '1';
                 toggleForm();
@@ -439,6 +435,7 @@
         }
 
         async function trocarOrdem(id1, id2) {
+            if (!id1 || !id2) return; // Segurança extra
             const item1 = roomItems.find(i => i.id === id1);
             const item2 = roomItems.find(i => i.id === id2);
             await supabaseClient.from('comandas').update({ created_at: item2.created_at }).eq('id', id1);
