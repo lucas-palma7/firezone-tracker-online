@@ -65,14 +65,14 @@
         li { 
             background: white; 
             padding: 15px; 
-            border-radius: 16px; /* Borda bem arredondada */
+            border-radius: 16px; 
             margin-bottom: 12px; 
-            border-left: 5px solid var(--bfr-black); /* Borda grossa na esquerda */
+            border-left: 5px solid var(--bfr-black); 
             box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            min-height: 80px; /* Garante altura para os controles */
+            min-height: 80px; 
             transition: opacity 0.3s, transform 0.3s;
         }
 
@@ -303,6 +303,14 @@
             if (senha === SENHA_MESTRA) { user.isAdmin = true; localStorage.setItem('fz_user', JSON.stringify(user)); location.reload(); } else if(senha) alert("Senha incorreta.");
         }
 
+        // Helper para formatar o valor inicial do input de edição (Fix do Bug R$ 120,00)
+        function formatarValorEditavel(valorNum) {
+            // Transforma 1.20 em "R$ 1,20"
+            let v = valorNum.toFixed(2).replace('.', ',');
+            v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            return "R$ " + v;
+        }
+
         async function carregarLobby() {
             mostrarTela('lobby');
             const listaDiv = document.getElementById('roomsList');
@@ -393,12 +401,12 @@
                 const isEditing = itensEmEdicao[item.id];
 
                 if (isEditing) {
-                    // --- MODO EDIÇÃO (FOTO 2) ---
+                    // --- MODO EDIÇÃO ---
                     listaMinha.innerHTML += `
                         <li id="item-${item.id}">
                             <div class="edit-container">
                                 <input type="text" class="edit-input" id="edit-nome-${item.id}" value="${item.nome}">
-                                <input type="text" class="edit-input" id="edit-preco-${item.id}" value="${(item.preco * 100).toFixed(0)}" inputmode="numeric" oninput="mascaraMoeda(this)">
+                                <input type="text" class="edit-input" id="edit-preco-${item.id}" value="${formatarValorEditavel(item.preco)}" inputmode="numeric" oninput="mascaraMoeda(this)">
                             </div>
                             <div class="controls-container">
                                 <button class="btn-ok" onclick="salvarEdicao(${item.id})">OK</button>
@@ -410,7 +418,7 @@
                             </div>
                         </li>`;
                 } else {
-                    // --- MODO VISUALIZAÇÃO (FOTO 1) ---
+                    // --- MODO VISUALIZAÇÃO ---
                     const showUp = index > 0 ? 'visible' : 'hidden';
                     const showDown = index < totalItens - 1 ? 'visible' : 'hidden';
 
@@ -499,7 +507,10 @@
         function ativarEdicao(id) { itensEmEdicao[id] = true; renderizarTudo(); }
         async function salvarEdicao(id) {
             const nomeNovo = document.getElementById(`edit-nome-${id}`).value;
+            // Parse robusto: Remove tudo que não é digito ou virgula, troca virgula por ponto.
+            // Ex: "R$ 1.200,50" -> "1200,50" -> "1200.50" -> 1200.5
             const precoNovo = parseFloat(document.getElementById(`edit-preco-${id}`).value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+            
             if(nomeNovo && precoNovo > 0) {
                 const item = roomItems.find(i => i.id === id);
                 if(item) { item.nome = nomeNovo; item.preco = precoNovo; }
