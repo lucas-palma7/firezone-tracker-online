@@ -6,7 +6,7 @@
     <title>Firezone Hub</title>
     <style>
         @font-face { font-family: 'Aptos'; src: local('Aptos'), local('Aptos Display'), local('Segoe UI'), local('-apple-system'); }
-        :root { --bfr-black: #000000; --bfr-white: #FFFFFF; --bg-page: #F4F4F4; --bg-card: #FFFFFF; --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32; --danger: #ff4444; }
+        :root { --bfr-black: #000000; --bfr-white: #FFFFFF; --bg-page: #F4F4F4; --bg-card: #FFFFFF; --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32; --danger: #ff4444; --edit: #3498db; }
         
         body { font-family: 'Aptos', sans-serif; background: var(--bg-page); margin: 0; padding: 20px 15px; color: var(--bfr-black); padding-bottom: 90px; }
         .container { max-width: 450px; margin: 0 auto; }
@@ -29,17 +29,23 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; 
             cursor: pointer; position: relative;
         }
-        .room-info h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 700; }
-        .room-users { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+        .room-info h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 700; word-break: break-word; }
+        .room-users { font-size: 11px; color: #888; display: flex; align-items: center; gap: 6px; font-weight: 500; margin-top: 5px; }
         .user-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; display: inline-block; }
         
         .btn-create-room { width: 100%; background: transparent; border: 2px dashed #ccc; color: #666; padding: 15px; border-radius: 16px; font-weight: 700; cursor: pointer; }
-        .btn-delete-room { background: #ffebeb; color: var(--danger); border: none; padding: 8px; border-radius: 8px; cursor: pointer; margin-left: 10px; z-index: 2; }
+        
+        /* Botões de Admin */
+        .lobby-actions { display: flex; gap: 8px; margin-left: 10px; }
+        .btn-action-lobby { border: none; padding: 8px; border-radius: 8px; cursor: pointer; z-index: 2; font-size: 16px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+        .btn-edit-room { background: #eaf6ff; color: var(--edit); }
+        .btn-delete-room { background: #ffebeb; color: var(--danger); }
 
         /* SALA */
         #roomScreen { display: none; }
         .room-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-back { background: #ddd; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .room-title-display { font-size: 16px; font-weight: 800; text-transform: uppercase; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* MINHA COMANDA */
         .card-expand { background: var(--bg-card); border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
@@ -50,7 +56,7 @@
         .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
         input { 
             width: 100%; border: 1px solid #E0E0E0; background: #F8F8F8; border-radius: 8px; padding: 10px; font-size: 15px; outline: none; 
-            box-sizing: border-box; /* Garante que padding não estoure a largura */
+            box-sizing: border-box; 
         }
         .btn-add { width: 100%; background: var(--bfr-black); color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
 
@@ -59,7 +65,6 @@
         .item-row { display: flex; justify-content: space-between; align-items: center; }
         .item-nome { font-weight: 700; font-size: 16px; word-break: break-word; }
 
-        /* Edição e Controles */
         .edit-input { padding: 5px; font-size: 14px; margin-bottom: 5px; border: 1px solid #333; width: 100%; border-radius: 6px; }
         .controles-group { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
         .qtd-controls { display: flex; gap: 5px; align-items: center; background: #f0f0f0; padding: 3px; border-radius: 6px; }
@@ -72,11 +77,9 @@
         .rank-pos { font-weight: 900; width: 25px; font-size: 18px; text-align: center; }
         .rank-name { font-weight: 600; font-size: 15px; }
         .rank-total { font-weight: 800; font-size: 15px; }
-        
         .rank-details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: #fcfcfc; border-top: 1px solid #eee; }
         .rank-details.show { max-height: 1000px; }
         .detail-item { padding: 10px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 13px; color: #555; }
-        
         .pos-1 { color: var(--gold); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .pos-2 { color: var(--silver); }
         .pos-3 { color: var(--bronze); }
@@ -85,7 +88,6 @@
         /* DOCK */
         .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; background: var(--bfr-black); color: white; padding: 12px 20px; border-radius: 14px; display: none; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; }
         .total-value { font-size: 20px; font-weight: 700; }
-        
         .btn-icon { background: #eee; border:none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; min-width: 30px; display: flex; align-items: center; justify-content: center; }
         .btn-icon.small { padding: 2px 6px; font-size: 10px; height: 20px; }
         .btn-save { background: var(--bfr-black); color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; }
@@ -172,14 +174,21 @@
         }
         document.getElementById('userStatus').innerText = `Olá, ${user.name}`;
 
-        let currentRoom = null;
+        let currentRoomId = null;   // UUID
+        let currentRoomName = null; // Nome de Exibição
         let roomItems = [];
         let visaoAtual = 'minha';
-        let itensEmEdicao = {}; // Controle local de quais itens estão sendo editados
+        let itensEmEdicao = {};
 
         // INICIALIZAÇÃO
-        const savedRoom = localStorage.getItem('fz_current_room');
-        if (savedRoom) entrarNaSala(savedRoom); else carregarLobby();
+        const savedRoomId = localStorage.getItem('fz_current_room_id');
+        const savedRoomName = localStorage.getItem('fz_current_room_name');
+        
+        if (savedRoomId && savedRoomName) {
+            entrarNaSala(savedRoomId, savedRoomName); 
+        } else {
+            carregarLobby();
+        }
 
         // --- LOBBY ---
         async function carregarLobby() {
@@ -197,65 +206,90 @@
             }
 
             rooms.forEach(room => {
+                // Filtra usuários ativos baseados no room_id (UUID)
                 const uniqueUsers = new Set((activeUsers || []).filter(u => u.room_id === room.id).map(u => u.user_id)).size;
                 
-                // Botão de deletar (Só Adm)
-                let deleteBtn = '';
+                let adminActions = '';
                 if(user.isAdmin) {
-                    deleteBtn = `<button class="btn-delete-room" onclick="excluirSala('${room.id}', event)">🗑️</button>`;
+                    adminActions = `
+                        <div class="lobby-actions">
+                            <button class="btn-action-lobby btn-edit-room" onclick="editarNomeSala('${room.id}', '${room.name}', event)">✎</button>
+                            <button class="btn-action-lobby btn-delete-room" onclick="excluirSala('${room.id}', event)">🗑️</button>
+                        </div>
+                    `;
                 }
 
                 const div = document.createElement('div');
                 div.className = 'room-card';
-                div.onclick = () => entrarNaSala(room.id);
+                // Passamos o ID (UUID) e o NAME para a função entrar
+                div.onclick = () => entrarNaSala(room.id, room.name);
                 div.innerHTML = `
-                    <div class="room-info">
-                        <h3>${room.id}</h3>
+                    <div class="room-info" style="flex-grow:1;">
+                        <h3>${room.name}</h3>
                         <div class="room-users">
                             <span class="user-dot"></span>
                             # de pessoas na lista: ${uniqueUsers}
                         </div>
                     </div>
                     <div style="display:flex; align-items:center;">
-                        <span style="font-size:20px; color:#ccc;">→</span>
-                        ${deleteBtn}
+                        ${adminActions || '<span style="font-size:20px; color:#ccc;">→</span>'}
                     </div>`;
                 listaDiv.appendChild(div);
             });
         }
 
+        // NOVA LÓGICA DE CRIAÇÃO (UUID é auto-generated)
         async function criarSalaAdmin() {
             const senha = prompt("Senha de Admin:");
             if (senha !== SENHA_MESTRA) return alert("Senha incorreta.");
-            const nomeSala = prompt("Nome da Sala:");
-            if (!nomeSala) return;
-            const idSala = nomeSala.trim(); 
-            const { error } = await supabaseClient.from('rooms').insert({ id: idSala });
-            if (error) alert("Sala já existe."); else {
+            const nomeInput = prompt("Nome da Sala:");
+            if (!nomeInput) return;
+            
+            // Inserimos apenas o nome. O ID (UUID) é gerado pelo banco.
+            // .select() retorna o objeto criado (com o ID novo)
+            const { data, error } = await supabaseClient.from('rooms').insert({ name: nomeInput }).select();
+            
+            if (error) {
+                console.error(error);
+                alert("Erro ao criar sala.");
+            } else {
                 user.isAdmin = true;
                 localStorage.setItem('fz_user', JSON.stringify(user));
-                entrarNaSala(idSala);
+                // Entra usando o ID e Nome retornados
+                entrarNaSala(data[0].id, data[0].name);
             }
         }
 
         async function excluirSala(roomId, event) {
-            event.stopPropagation(); // Impede entrar na sala ao clicar no lixo
-            if(!confirm(`Tem certeza que deseja apagar a sala "${roomId}" e TODOS os itens dela?`)) return;
-
-            // Delete cascade não é garantido se não configurado no banco, então deletamos itens primeiro por segurança
-            await supabaseClient.from('comandas').delete().eq('room_id', roomId);
+            event.stopPropagation();
+            if(!confirm(`ADMIN: Apagar esta sala? (Ação irreversível)`)) return;
             await supabaseClient.from('rooms').delete().eq('id', roomId);
             carregarLobby();
         }
 
+        // NOVA LÓGICA DE RENOMEAR (Update simples)
+        async function editarNomeSala(roomId, oldName, event) {
+            event.stopPropagation();
+            const novoNome = prompt("Renomear sala para:", oldName);
+            if (!novoNome || novoNome === oldName) return;
+
+            const { error } = await supabaseClient.from('rooms').update({ name: novoNome }).eq('id', roomId);
+            if(error) alert("Erro ao renomear.");
+            else carregarLobby();
+        }
+
         // --- SALA ---
-        function entrarNaSala(roomId) {
-            currentRoom = roomId;
-            localStorage.setItem('fz_current_room', roomId);
-            document.getElementById('roomTitle').innerText = roomId;
+        function entrarNaSala(roomId, roomName) {
+            currentRoomId = roomId;
+            currentRoomName = roomName;
+            
+            localStorage.setItem('fz_current_room_id', roomId);
+            localStorage.setItem('fz_current_room_name', roomName);
+            
+            document.getElementById('roomTitle').innerText = roomName;
             mostrarTela('room');
             
-            // Importante: Ordenar por created_at para manter a ordem estável, a menos que troquemos
+            // Escuta o UUID
             supabaseClient.channel('room_changes')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'comandas', filter: `room_id=eq.${roomId}` }, 
                 () => buscarItens())
@@ -265,8 +299,8 @@
         }
 
         async function buscarItens() {
-            // Ordenamos por created_at. Para mudar a ordem, trocaremos as datas de criação.
-            const { data } = await supabaseClient.from('comandas').select('*').eq('room_id', currentRoom).order('created_at', { ascending: true });
+            // Busca usando o UUID
+            const { data } = await supabaseClient.from('comandas').select('*').eq('room_id', currentRoomId).order('created_at', { ascending: true });
             if(data) {
                 roomItems = data;
                 renderizarTudo();
@@ -282,110 +316,74 @@
             let totalMinha = 0;
             let totalGeral = 0;
             const usersMap = {};
-
-            // Filtra e ordena meus itens para exibição
             const meusItens = roomItems.filter(i => i.user_id === user.id);
             const totalItens = meusItens.length;
 
             roomItems.forEach(item => {
                 totalGeral += (item.preco * item.qtd);
-                
-                // --- RENDERIZAÇÃO: RANKING (Agrupamento) ---
                 if (!usersMap[item.user_id]) usersMap[item.user_id] = { name: item.user_name, total: 0, items: [], id: item.user_id };
                 usersMap[item.user_id].total += (item.preco * item.qtd);
                 usersMap[item.user_id].items.push(item);
             });
 
-            // --- RENDERIZAÇÃO: MINHA COMANDA ---
+            // MINHA COMANDA
             meusItens.forEach((item, index) => {
                 totalMinha += (item.preco * item.qtd);
                 const isEditing = itensEmEdicao[item.id];
-
-                let conteudoPrincipal = '';
-                let controlesExtras = '';
+                let conteudo = '', controles = '';
 
                 if (isEditing) {
-                    // MODO EDIÇÃO
-                    conteudoPrincipal = `
+                    conteudo = `
                         <input type="text" class="edit-input" id="edit-nome-${item.id}" value="${item.nome}">
                         <input type="text" class="edit-input" id="edit-preco-${item.id}" value="${(item.preco * 100).toFixed(0)}" inputmode="numeric" oninput="mascaraMoeda(this)">
-                        <button class="btn-save" onclick="salvarEdicao(${item.id})">Salvar</button>
-                    `;
+                        <button class="btn-save" onclick="salvarEdicao(${item.id})">Salvar</button>`;
                 } else {
-                    // MODO VISUALIZAÇÃO
-                    conteudoPrincipal = `
-                        <div class="item-nome">${item.nome}</div>
-                        <div style="color:#666; font-size:13px;">${item.qtd}x ${BRL.format(item.preco)}</div>
-                    `;
-                    
-                    // Botões de subir/descer (Só mostra se tiver mais de 1 item)
+                    conteudo = `<div class="item-nome">${item.nome}</div><div style="color:#666; font-size:13px;">${item.qtd}x ${BRL.format(item.preco)}</div>`;
                     let arrows = '';
                     if(totalItens > 1) {
                         const showUp = index > 0 ? 'visible' : 'hidden';
                         const showDown = index < totalItens - 1 ? 'visible' : 'hidden';
-                        arrows = `
-                            <div style="display:flex; flex-direction:column; gap:2px;">
-                                <button class="btn-icon small" style="visibility:${showUp}" onclick="trocarOrdem(${item.id}, ${meusItens[index-1].id})">▲</button>
-                                <button class="btn-icon small" style="visibility:${showDown}" onclick="trocarOrdem(${item.id}, ${meusItens[index+1].id})">▼</button>
-                            </div>
-                        `;
+                        arrows = `<div style="display:flex; flex-direction:column; gap:2px;">
+                                    <button class="btn-icon small" style="visibility:${showUp}" onclick="trocarOrdem(${item.id}, ${meusItens[index-1].id})">▲</button>
+                                    <button class="btn-icon small" style="visibility:${showDown}" onclick="trocarOrdem(${item.id}, ${meusItens[index+1].id})">▼</button>
+                                  </div>`;
                     }
-
-                    controlesExtras = `
-                        <div class="action-controls">
-                            ${arrows}
-                            <button class="btn-icon" onclick="ativarEdicao(${item.id})">✎</button>
-                        </div>
-                    `;
+                    controles = `<div class="action-controls">${arrows}<button class="btn-icon" onclick="ativarEdicao(${item.id})">✎</button></div>`;
                 }
 
                 listaMinha.innerHTML += `
                     <li>
                         <div class="item-row">
-                            <div style="flex-grow:1; padding-right: 10px;">
-                                ${conteudoPrincipal}
-                            </div>
+                            <div style="flex-grow:1; padding-right:10px;">${conteudo}</div>
                             <div class="controles-group">
                                 <div style="font-weight:700;">${BRL.format(item.preco * item.qtd)}</div>
-                                
                                 <div class="qtd-controls">
                                     <button class="btn-icon" onclick="alterarQtd(${item.id}, ${item.qtd - 1})">-</button>
                                     <span style="font-size:14px; min-width:15px; text-align:center;">${item.qtd}</span>
                                     <button class="btn-icon" onclick="alterarQtd(${item.id}, ${item.qtd + 1})">+</button>
                                 </div>
-                                ${controlesExtras}
+                                ${controles}
                             </div>
                         </div>
                     </li>`;
             });
 
-            // --- RENDERIZAÇÃO: RANKING LISTA ---
+            // RANKING
             const rankingArray = Object.values(usersMap).sort((a, b) => b.total - a.total);
-            if (rankingArray.length === 0) {
-                listaRanking.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">Mesa vazia.</div>';
-            } else {
+            if (rankingArray.length === 0) listaRanking.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">Mesa vazia.</div>';
+            else {
                 rankingArray.forEach((player, index) => {
-                    let posIcon = `${index + 1}º`;
-                    let posClass = 'pos-n';
+                    let posIcon = `${index + 1}º`, posClass = 'pos-n';
                     if (index === 0) { posIcon = '🥇'; posClass = 'pos-1'; }
                     if (index === 1) { posIcon = '🥈'; posClass = 'pos-2'; }
                     if (index === 2) { posIcon = '🥉'; posClass = 'pos-3'; }
 
-                    // Detalhes com valor unitário
-                    let detalhesHTML = player.items.map(i => `
-                        <div class="detail-item">
-                            <span>${i.qtd}x ${i.nome} <span style="color:#999; font-size:11px;">(${BRL.format(i.preco)} un.)</span></span>
-                            <span>${BRL.format(i.preco * i.qtd)}</span>
-                        </div>
-                    `).join('');
-
+                    let detalhesHTML = player.items.map(i => `<div class="detail-item"><span>${i.qtd}x ${i.nome} <span style="color:#999; font-size:11px;">(${BRL.format(i.preco)})</span></span><span>${BRL.format(i.preco * i.qtd)}</span></div>`).join('');
+                    
                     listaRanking.innerHTML += `
                         <div class="rank-card">
                             <div class="rank-header" onclick="toggleDetails('rank-${player.id}')">
-                                <div class="rank-info">
-                                    <div class="rank-pos ${posClass}">${posIcon}</div>
-                                    <div class="rank-name">${player.name}</div>
-                                </div>
+                                <div class="rank-info"><div class="rank-pos ${posClass}">${posIcon}</div><div class="rank-name">${player.name}</div></div>
                                 <div class="rank-total">${BRL.format(player.total)} <span style="font-size:10px; color:#999;">▼</span></div>
                             </div>
                             <div id="rank-${player.id}" class="rank-details">${detalhesHTML}</div>
@@ -393,7 +391,7 @@
                 });
             }
 
-            // --- DOCK ---
+            // DOCK
             if (visaoAtual === 'minha') {
                 document.getElementById('totalDisplay').innerText = BRL.format(totalMinha);
                 document.getElementById('labelTotal').innerText = "Total da Minha Comanda";
@@ -406,18 +404,9 @@
         }
 
         function toggleDetails(id) { document.getElementById(id).classList.toggle('show'); }
+        function mudarVisao(v) { visaoAtual = v; document.getElementById('btnMinha').classList.toggle('active', v === 'minha'); document.getElementById('btnRanking').classList.toggle('active', v === 'ranking'); document.getElementById('visaoMinha').style.display = v === 'minha' ? 'block' : 'none'; document.getElementById('visaoRanking').style.display = v === 'ranking' ? 'block' : 'none'; renderizarTudo(); }
 
-        function mudarVisao(v) {
-            visaoAtual = v;
-            document.getElementById('btnMinha').classList.toggle('active', v === 'minha');
-            document.getElementById('btnRanking').classList.toggle('active', v === 'ranking');
-            document.getElementById('visaoMinha').style.display = v === 'minha' ? 'block' : 'none';
-            document.getElementById('visaoRanking').style.display = v === 'ranking' ? 'block' : 'none';
-            renderizarTudo();
-        }
-
-        // --- CRUD ITENS ---
-
+        // CRUD
         async function adicionar() {
             const nomeInput = document.getElementById('nome');
             const precoInput = document.getElementById('preco');
@@ -427,75 +416,47 @@
             const qtd = parseInt(qtdInput.value) || 1;
 
             if(nome && preco > 0) {
-                await supabaseClient.from('comandas').insert({
-                    room_id: currentRoom, user_id: user.id, user_name: user.name,
-                    nome, preco, qtd
-                });
+                // Inserimos com o currentRoomId (UUID)
+                await supabaseClient.from('comandas').insert({ room_id: currentRoomId, user_id: user.id, user_name: user.name, nome, preco, qtd });
                 nomeInput.value = ''; precoInput.value = ''; qtdInput.value = '1';
                 toggleForm();
             }
         }
 
         async function alterarQtd(id, novaQtd) {
-            if(novaQtd <= 0) {
-                if(confirm("Remover item?")) await supabaseClient.from('comandas').delete().eq('id', id);
-            } else {
-                await supabaseClient.from('comandas').update({ qtd: novaQtd }).eq('id', id);
-            }
+            if(novaQtd <= 0) { if(confirm("Remover item?")) await supabaseClient.from('comandas').delete().eq('id', id); } 
+            else await supabaseClient.from('comandas').update({ qtd: novaQtd }).eq('id', id);
         }
 
-        // --- LÓGICA DE EDIÇÃO ---
-        function ativarEdicao(id) {
-            itensEmEdicao[id] = true;
-            renderizarTudo();
-        }
-
+        function ativarEdicao(id) { itensEmEdicao[id] = true; renderizarTudo(); }
         async function salvarEdicao(id) {
             const nomeNovo = document.getElementById(`edit-nome-${id}`).value;
             const precoNovo = parseFloat(document.getElementById(`edit-preco-${id}`).value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
-
             if(nomeNovo && precoNovo > 0) {
                 await supabaseClient.from('comandas').update({ nome: nomeNovo, preco: precoNovo }).eq('id', id);
-                delete itensEmEdicao[id]; // Sai do modo edição
-                // RenderizarTudo será chamado pelo realtime, mas podemos forçar visualmente se quiser
+                delete itensEmEdicao[id];
             }
         }
 
-        // --- LÓGICA DE REORDENAR (HACK) ---
-        // Troca o timestamp 'created_at' de dois itens para inverter a ordem na query
         async function trocarOrdem(id1, id2) {
             const item1 = roomItems.find(i => i.id === id1);
             const item2 = roomItems.find(i => i.id === id2);
-
-            // Trocamos as datas
             await supabaseClient.from('comandas').update({ created_at: item2.created_at }).eq('id', id1);
             await supabaseClient.from('comandas').update({ created_at: item1.created_at }).eq('id', id2);
-            // Realtime atualiza a tela
         }
 
         async function limparMinhaComanda() {
-            if(confirm("Tem certeza que deseja apagar TODA a sua comanda nesta mesa?")) {
-                await supabaseClient.from('comandas').delete().eq('room_id', currentRoom).eq('user_id', user.id);
-            }
+            if(confirm("Apagar toda a sua comanda?")) await supabaseClient.from('comandas').delete().eq('room_id', currentRoomId).eq('user_id', user.id);
         }
 
-        // UTILITÁRIOS
-        function mostrarTela(t) {
-            document.getElementById('lobbyScreen').style.display = t === 'lobby' ? 'block' : 'none';
-            document.getElementById('roomScreen').style.display = t === 'room' ? 'block' : 'none';
-            document.getElementById('totalDock').style.display = t === 'room' ? 'flex' : 'none';
-        }
+        // UTIL
+        function mostrarTela(t) { document.getElementById('lobbyScreen').style.display = t === 'lobby' ? 'block' : 'none'; document.getElementById('roomScreen').style.display = t === 'room' ? 'block' : 'none'; document.getElementById('totalDock').style.display = t === 'room' ? 'flex' : 'none'; }
         function toggleForm() { document.getElementById('cardForm').classList.toggle('open'); }
-        function mascaraMoeda(i) {
-            let v = i.value.replace(/\D/g,'');
-            v = (v/100).toFixed(2) + '';
-            v = v.replace(".", ",");
-            v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-            i.value = "R$ " + v;
-        }
-        function sairDaSala() {
-            localStorage.removeItem('fz_current_room');
-            location.reload();
+        function mascaraMoeda(i) { let v = i.value.replace(/\D/g,''); v = (v/100).toFixed(2) + ''; v = v.replace(".", ","); v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."); i.value = "R$ " + v; }
+        function sairDaSala() { 
+            localStorage.removeItem('fz_current_room_id'); 
+            localStorage.removeItem('fz_current_room_name'); 
+            location.reload(); 
         }
     </script>
 </body>
