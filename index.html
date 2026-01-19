@@ -46,7 +46,7 @@
         .btn-back { background: #ddd; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .room-title-display { font-size: 16px; font-weight: 800; text-transform: uppercase; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* CARD ADICIONAR */
+        /* MINHA COMANDA */
         .card-expand { background: var(--bg-card); border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
         .card-header { padding: 15px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; }
         .card-body { max-height: 0; opacity: 0; padding: 0 18px; transition: all 0.3s; visibility: hidden; }
@@ -56,29 +56,49 @@
         input { width: 100%; border: 1px solid #E0E0E0; background: #F8F8F8; border-radius: 8px; padding: 10px; font-size: 15px; outline: none; box-sizing: border-box; }
         .btn-add { width: 100%; background: var(--bfr-black); color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
 
-        /* LISTA COMPACTA */
-        ul { list-style: none; padding: 0; margin: 0; }
-        li { background: white; padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid var(--bfr-black); box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        
-        .item-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .item-info { flex-grow: 1; min-width: 0; } /* min-width 0 ajuda no text-overflow se precisar */
-        .item-nome { font-weight: 700; font-size: 15px; word-break: break-word; line-height: 1.2; }
-        .item-price { color: #666; font-size: 12px; margin-top: 2px; }
+        /* LISTA & ANIMAÇÕES */
+        ul { list-style: none; padding: 0; margin: 0; position: relative; }
+        li { 
+            background: white; padding: 10px; border-radius: 12px; margin-bottom: 8px; 
+            border-left: 4px solid var(--bfr-black); box-shadow: 0 2px 5px rgba(0,0,0,0.03); 
+            transition: background 0.2s, opacity 0.3s, transform 0.3s;
+        }
 
-        /* Controles Compactos */
-        .controls-wrapper { display: flex; align-items: center; gap: 8px; }
-        .total-price { font-weight: 800; font-size: 15px; min-width: 60px; text-align: right; }
+        /* Classe para animação de exclusão */
+        li.fading-out {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        .item-row { display: flex; align-items: center; gap: 10px; }
         
-        .action-block { display: flex; align-items: center; background: #f4f4f4; border-radius: 8px; padding: 2px; }
+        /* 1. Coluna Setas */
+        .col-arrows { display: flex; flex-direction: column; gap: 2px; justify-content: center; width: 24px; }
+        .arrow-btn { 
+            width: 24px; height: 18px; border: none; background: #f0f0f0; font-size: 10px; cursor: pointer; 
+            border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #555; transition: background 0.1s;
+        }
+        .arrow-btn:active { background: #ccc; }
+
+        /* 2. Coluna Lápis */
+        .col-edit { display: flex; align-items: center; justify-content: center; }
+        .btn-edit-icon { border: none; background: transparent; font-size: 16px; color: #888; cursor: pointer; padding: 5px; }
+
+        /* 3. Coluna Info (Nome) */
+        .col-info { flex-grow: 1; min-width: 0; padding-left: 5px; }
+        .item-nome { font-weight: 700; font-size: 15px; word-break: break-word; line-height: 1.2; }
+        .item-price-unit { color: #999; font-size: 11px; margin-top: 2px; }
+
+        /* 4. Coluna Qtd */
+        .col-qtd { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 80px; }
+        .total-price { font-weight: 800; font-size: 15px; }
         
+        .qtd-wrapper { display: flex; align-items: center; background: #f4f4f4; border-radius: 6px; overflow: hidden; }
         .qtd-btn { width: 28px; height: 28px; border: none; background: transparent; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .qtd-btn:active { background: #ddd; }
         .qtd-display { font-size: 14px; font-weight: 600; min-width: 20px; text-align: center; }
 
-        .arrow-stack { display: flex; flex-direction: column; gap: 1px; margin-left: 2px; border-left: 1px solid #ddd; padding-left: 2px; }
-        .arrow-btn { width: 24px; height: 14px; border: none; background: #fff; font-size: 8px; cursor: pointer; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #555; }
-        .arrow-btn:active { background: #ddd; }
-
-        .btn-edit-icon { border: none; background: transparent; font-size: 16px; color: #888; cursor: pointer; padding: 5px; margin-left: 5px; }
 
         /* Edição */
         .edit-input { padding: 5px; font-size: 14px; margin-bottom: 5px; border: 1px solid #333; width: 100%; border-radius: 6px; box-sizing: border-box; }
@@ -201,9 +221,9 @@
             carregarLobby();
         }
 
-        // --- LOBBY ---
         function sanitizarId(texto) { return texto.trim().replace(/[^a-zA-Z0-9 ]/g, "-").replace(/\s+/g, " "); }
 
+        // --- LOBBY ---
         async function carregarLobby() {
             mostrarTela('lobby');
             const listaDiv = document.getElementById('roomsList');
@@ -220,7 +240,6 @@
 
             rooms.forEach(room => {
                 const uniqueUsers = new Set((activeUsers || []).filter(u => u.room_id === room.id).map(u => u.user_id)).size;
-                
                 let adminActions = '';
                 if(user.isAdmin) {
                     adminActions = `
@@ -230,21 +249,15 @@
                         </div>
                     `;
                 }
-
                 const div = document.createElement('div');
                 div.className = 'room-card';
                 div.onclick = () => entrarNaSala(room.id, room.name);
                 div.innerHTML = `
                     <div class="room-info" style="flex-grow:1;">
                         <h3>${room.name}</h3>
-                        <div class="room-users">
-                            <span class="user-dot"></span>
-                            # de pessoas na lista: ${uniqueUsers}
-                        </div>
+                        <div class="room-users"><span class="user-dot"></span># de pessoas na lista: ${uniqueUsers}</div>
                     </div>
-                    <div style="display:flex; align-items:center;">
-                        ${adminActions || '<span style="font-size:20px; color:#ccc;">→</span>'}
-                    </div>`;
+                    <div style="display:flex; align-items:center;">${adminActions || '<span style="font-size:20px; color:#ccc;">→</span>'}</div>`;
                 listaDiv.appendChild(div);
             });
         }
@@ -285,35 +298,27 @@
             localStorage.setItem('fz_current_room_name', roomName);
             document.getElementById('roomTitle').innerText = roomName;
             mostrarTela('room');
-            
-            supabaseClient.channel('room_changes')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'comandas', filter: `room_id=eq.${roomId}` }, 
-                () => buscarItens())
-                .subscribe();
-
+            supabaseClient.channel('room_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'comandas', filter: `room_id=eq.${roomId}` }, () => buscarItens()).subscribe();
             buscarItens();
         }
 
         async function buscarItens() {
             const { data } = await supabaseClient.from('comandas').select('*').eq('room_id', currentRoomId).order('created_at', { ascending: true });
-            if(data) {
-                roomItems = data;
-                renderizarTudo();
-            }
+            if(data) { roomItems = data; renderizarTudo(); }
         }
 
         function renderizarTudo() {
             const listaMinha = document.getElementById('listaMinha');
             const listaRanking = document.getElementById('listaRanking');
+            
+            // Só limpa se não estivermos animando delete. 
+            // Mas em renderizações completas, limpamos.
             listaMinha.innerHTML = '';
             listaRanking.innerHTML = '';
 
             let totalMinha = 0;
             let totalGeral = 0;
             const usersMap = {};
-            
-            // Filtra meus itens e garante que eles estejam ordenados pela data (para as setas funcionarem na ordem certa)
-            // A ordem já vem do banco, mas em operações otimistas (subir/descer), roomItems é alterado localmente.
             const meusItens = roomItems.filter(i => i.user_id === user.id);
             const totalItens = meusItens.length;
 
@@ -324,14 +329,15 @@
                 usersMap[item.user_id].items.push(item);
             });
 
-            // --- MINHA COMANDA (UI OTIMISTA E COMPACTA) ---
+            // MINHA COMANDA
             meusItens.forEach((item, index) => {
                 totalMinha += (item.preco * item.qtd);
                 const isEditing = itensEmEdicao[item.id];
-
+                
+                // --- RENDERIZAÇÃO DO CARD ---
                 if (isEditing) {
                     listaMinha.innerHTML += `
-                        <li>
+                        <li id="item-${item.id}">
                             <div class="item-row" style="flex-direction: column; align-items: stretch;">
                                 <input type="text" class="edit-input" id="edit-nome-${item.id}" value="${item.nome}">
                                 <input type="text" class="edit-input" id="edit-preco-${item.id}" value="${(item.preco * 100).toFixed(0)}" inputmode="numeric" oninput="mascaraMoeda(this)">
@@ -339,45 +345,47 @@
                             </div>
                         </li>`;
                 } else {
-                    let arrows = '';
-                    if(totalItens > 1) {
-                        const showUp = index > 0 ? 'visible' : 'hidden';
-                        const showDown = index < totalItens - 1 ? 'visible' : 'hidden';
-                        // Passamos o ID diretamente, sem depender do indice anterior/proximo ser lido aqui
-                        arrows = `
-                            <div class="arrow-stack">
-                                <button class="arrow-btn" style="visibility:${showUp}" onclick="trocarOrdem('${item.id}', 'UP')">▲</button>
-                                <button class="arrow-btn" style="visibility:${showDown}" onclick="trocarOrdem('${item.id}', 'DOWN')">▼</button>
-                            </div>`;
-                    }
+                    const showUp = index > 0 ? 'visible' : 'hidden';
+                    const showDown = index < totalItens - 1 ? 'visible' : 'hidden';
+                    // Nota: Passamos strings 'UP' e 'DOWN' para a função agora
+                    const arrows = `
+                        <div class="col-arrows">
+                            <button class="arrow-btn" style="visibility:${showUp}" onclick="trocarOrdem('${item.id}', 'UP')">▲</button>
+                            <button class="arrow-btn" style="visibility:${showDown}" onclick="trocarOrdem('${item.id}', 'DOWN')">▼</button>
+                        </div>`;
+                    
+                    const editBtn = `<button class="btn-edit-icon" onclick="ativarEdicao(${item.id})">✎</button>`;
+                    
+                    const info = `
+                        <div class="col-info">
+                            <div class="item-nome">${item.nome}</div>
+                            <div class="item-price-unit">${BRL.format(item.preco)} unit.</div>
+                        </div>`;
 
+                    const controls = `
+                        <div class="col-qtd">
+                            <div class="total-price">${BRL.format(item.preco * item.qtd)}</div>
+                            <div class="qtd-wrapper">
+                                <button class="qtd-btn" onclick="alterarQtd(${item.id}, ${item.qtd - 1})">-</button>
+                                <div class="qtd-display">${item.qtd}</div>
+                                <button class="qtd-btn" onclick="alterarQtd(${item.id}, ${item.qtd + 1})">+</button>
+                            </div>
+                        </div>`;
+
+                    // ORDEM SOLICITADA: 1-Setas 2-Lapis 3-Nome 4-Qtd
                     listaMinha.innerHTML += `
-                        <li>
+                        <li id="item-${item.id}">
                             <div class="item-row">
-                                <div class="item-info">
-                                    <div class="item-nome">${item.nome}</div>
-                                    <div class="item-price">${item.qtd}x ${BRL.format(item.preco)}</div>
-                                </div>
-                                
-                                <div class="controls-wrapper">
-                                    <div class="total-price">${BRL.format(item.preco * item.qtd)}</div>
-                                    
-                                    <div class="action-block">
-                                        <button class="qtd-btn" onclick="alterarQtd(${item.id}, ${item.qtd - 1})">-</button>
-                                        <div class="qtd-display">${item.qtd}</div>
-                                        <button class="qtd-btn" onclick="alterarQtd(${item.id}, ${item.qtd + 1})">+</button>
-                                        
-                                        ${arrows}
-                                    </div>
-
-                                    <button class="btn-edit-icon" onclick="ativarEdicao(${item.id})">✎</button>
-                                </div>
+                                ${arrows}
+                                <div class="col-edit">${editBtn}</div>
+                                ${info}
+                                ${controls}
                             </div>
                         </li>`;
                 }
             });
 
-            // --- RANKING ---
+            // RANKING
             const rankingArray = Object.values(usersMap).sort((a, b) => b.total - a.total);
             if (rankingArray.length === 0) listaRanking.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">Mesa vazia.</div>';
             else {
@@ -386,9 +394,7 @@
                     if (index === 0) { posIcon = '🥇'; posClass = 'pos-1'; }
                     if (index === 1) { posIcon = '🥈'; posClass = 'pos-2'; }
                     if (index === 2) { posIcon = '🥉'; posClass = 'pos-3'; }
-
                     let detalhesHTML = player.items.map(i => `<div class="detail-item"><span>${i.qtd}x ${i.nome} <span style="color:#999; font-size:11px;">(${BRL.format(i.preco)})</span></span><span>${BRL.format(i.preco * i.qtd)}</span></div>`).join('');
-                    
                     listaRanking.innerHTML += `
                         <div class="rank-card">
                             <div class="rank-header" onclick="toggleDetails('rank-${player.id}')">
@@ -415,8 +421,7 @@
         function toggleDetails(id) { document.getElementById(id).classList.toggle('show'); }
         function mudarVisao(v) { visaoAtual = v; document.getElementById('btnMinha').classList.toggle('active', v === 'minha'); document.getElementById('btnRanking').classList.toggle('active', v === 'ranking'); document.getElementById('visaoMinha').style.display = v === 'minha' ? 'block' : 'none'; document.getElementById('visaoRanking').style.display = v === 'ranking' ? 'block' : 'none'; renderizarTudo(); }
 
-        // --- AÇÕES CRUD OTIMISTAS ---
-
+        // CRUD
         async function adicionar() {
             const nomeInput = document.getElementById('nome');
             const precoInput = document.getElementById('preco');
@@ -426,7 +431,6 @@
             const qtd = parseInt(qtdInput.value) || 1;
 
             if(nome && preco > 0) {
-                // Insere no banco (Realtime vai atualizar a tela sozinho)
                 await supabaseClient.from('comandas').insert({ room_id: currentRoomId, user_id: user.id, user_name: user.name, nome, preco, qtd });
                 nomeInput.value = ''; precoInput.value = ''; qtdInput.value = '1';
                 toggleForm();
@@ -436,19 +440,20 @@
         async function alterarQtd(id, novaQtd) {
             if(novaQtd <= 0) {
                 if(confirm("Remover item?")) {
-                    // UI OTIMISTA: Remove localmente AGORA
-                    roomItems = roomItems.filter(i => i.id !== id);
-                    renderizarTudo();
-                    // Depois avisa o banco
-                    await supabaseClient.from('comandas').delete().eq('id', id);
+                    // Animação de saída antes de deletar
+                    const el = document.getElementById(`item-${id}`);
+                    if(el) {
+                        el.classList.add('fading-out');
+                        setTimeout(async () => {
+                            roomItems = roomItems.filter(i => i.id !== id);
+                            renderizarTudo();
+                            await supabaseClient.from('comandas').delete().eq('id', id);
+                        }, 300); // Espera animação CSS
+                    }
                 }
             } else {
-                // UI OTIMISTA: Atualiza localmente AGORA
                 const item = roomItems.find(i => i.id === id);
-                if(item) {
-                    item.qtd = novaQtd;
-                    renderizarTudo();
-                }
+                if(item) { item.qtd = novaQtd; renderizarTudo(); }
                 await supabaseClient.from('comandas').update({ qtd: novaQtd }).eq('id', id);
             }
         }
@@ -459,38 +464,68 @@
             const precoNovo = parseFloat(document.getElementById(`edit-preco-${id}`).value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
             if(nomeNovo && precoNovo > 0) {
                 const item = roomItems.find(i => i.id === id);
-                if(item) { item.nome = nomeNovo; item.preco = precoNovo; } // Otimista
+                if(item) { item.nome = nomeNovo; item.preco = precoNovo; }
                 delete itensEmEdicao[id];
                 renderizarTudo();
                 await supabaseClient.from('comandas').update({ nome: nomeNovo, preco: precoNovo }).eq('id', id);
             }
         }
 
+        // --- ANIMAÇÃO FLIP PARA TROCA DE ORDEM ---
         async function trocarOrdem(currentId, direction) {
-            // UI OTIMISTA DE TROCA
-            const myItems = roomItems.filter(i => i.user_id === user.id); // Já estão ordenados por data
+            const myItems = roomItems.filter(i => i.user_id === user.id);
             const currentIndex = myItems.findIndex(i => i.id === parseInt(currentId));
             
             if (currentIndex === -1) return;
-
             const targetIndex = direction === 'UP' ? currentIndex - 1 : currentIndex + 1;
             if (targetIndex < 0 || targetIndex >= myItems.length) return;
 
             const itemA = myItems[currentIndex];
             const itemB = myItems[targetIndex];
 
-            // 1. Troca as datas na memória (SWAP)
+            // 1. Pega elementos DOM antes da troca
+            const elA = document.getElementById(`item-${itemA.id}`);
+            const elB = document.getElementById(`item-${itemB.id}`);
+            
+            // 2. Mede posição inicial
+            const posA = elA.getBoundingClientRect().top;
+            const posB = elB.getBoundingClientRect().top;
+
+            // 3. Troca dados e Renderiza
             const tempDate = itemA.created_at;
             itemA.created_at = itemB.created_at;
             itemB.created_at = tempDate;
-
-            // 2. Reordena o array principal global baseado nas novas datas
             roomItems.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            
-            // 3. Renderiza instantaneamente
             renderizarTudo();
 
-            // 4. Salva no banco (troca as datas)
+            // 4. Mede posição final
+            const newElA = document.getElementById(`item-${itemA.id}`);
+            const newElB = document.getElementById(`item-${itemB.id}`);
+            const newPosA = newElA.getBoundingClientRect().top;
+            const newPosB = newElB.getBoundingClientRect().top;
+
+            // 5. Inverte (Aplica Transform)
+            const deltaA = posA - newPosA;
+            const deltaB = posB - newPosB;
+
+            // Aplica transform instantaneamente sem transição
+            newElA.style.transition = 'none';
+            newElB.style.transition = 'none';
+            newElA.style.transform = `translateY(${deltaA}px)`;
+            newElB.style.transform = `translateY(${deltaB}px)`;
+
+            // 6. Play (Remove transform com animação)
+            // Força reflow
+            newElA.offsetHeight; 
+            
+            requestAnimationFrame(() => {
+                newElA.style.transition = 'transform 0.3s ease';
+                newElB.style.transition = 'transform 0.3s ease';
+                newElA.style.transform = '';
+                newElB.style.transform = '';
+            });
+
+            // 7. Salva no Banco
             await supabaseClient.from('comandas').update({ created_at: itemA.created_at }).eq('id', itemA.id);
             await supabaseClient.from('comandas').update({ created_at: itemB.created_at }).eq('id', itemB.id);
         }
