@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-const SENHA_MESTRA = "BFR10";
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -100,7 +100,7 @@ export default function Home() {
       }
     } else {
       const senha = prompt("Senha Admin:");
-      if (senha === SENHA_MESTRA) {
+      if (senha === ADMIN_PASSWORD) {
         const updated = { ...user, isAdmin: true };
         setUser(updated);
         localStorage.setItem('fz_user', JSON.stringify(updated));
@@ -113,7 +113,7 @@ export default function Home() {
   const createRoom = async () => {
     if (!user.isAdmin) {
       const senha = prompt("Senha de Admin:");
-      if (senha !== SENHA_MESTRA) return alert("Senha incorreta.");
+      if (senha !== ADMIN_PASSWORD) return alert("Senha incorreta.");
     }
     const name = prompt("Nome da Sala:");
     if (!name) return;
