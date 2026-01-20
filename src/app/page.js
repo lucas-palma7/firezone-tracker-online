@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import {
   ChevronUp,
@@ -21,6 +22,7 @@ import { verifyAdminPassword } from '@/app/actions';
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function Home() {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [currentRoom, setCurrentRoom] = useState(null);
@@ -41,14 +43,7 @@ export default function Home() {
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     } else {
-      const name = prompt("Qual seu nome?") || "Torcedor";
-      const newUser = {
-        id: 'u_' + Math.random().toString(36).substr(2, 9),
-        name,
-        isAdmin: false
-      };
-      localStorage.setItem('fz_user', JSON.stringify(newUser));
-      setUser(newUser);
+      router.push('/login');
     }
 
     // 2. Clear room if not saved
@@ -434,10 +429,10 @@ export default function Home() {
       )}
 
       <style jsx>{`
-        header { text-align: center; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
-        .bfr-logo { width: 60px; height: 60px; margin-bottom: 10px; }
-        h1 { font-size: 24px; letter-spacing: -1px; margin: 0; font-weight: 800; }
-        .subtitle { font-size: 14px; color: #666; margin-top: 5px; font-weight: 500; }
+        header { text-align: center; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .bfr-logo { width: 60px; height: 60px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
+        h1 { font-size: 24px; letter-spacing: -1px; margin: 0; font-weight: 800; text-align: center; width: 100%; }
+        .subtitle { font-size: 14px; color: #666; margin-top: 5px; font-weight: 500; text-align: center; width: 100%; }
         .admin-tag { color: var(--danger); font-weight: 700; font-size: 12px; margin-left: 4px; vertical-align: middle; }
 
         .room-nav { display: flex; gap: 10px; margin-bottom: 20px; background: #e0e0e0; padding: 4px; border-radius: 10px; }

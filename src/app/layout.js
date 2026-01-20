@@ -3,6 +3,9 @@ import './globals.css'
 export const metadata = {
   title: 'Firezone Hub',
   description: 'Tracker de comandas online para o Firezone',
+  icons: {
+    icon: 'https://upload.wikimedia.org/wikipedia/commons/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg',
+  },
 }
 
 export const viewport = {
