@@ -15,9 +15,9 @@ import {
   Settings,
   Circle
 } from 'lucide-react';
+import { verifyAdminPassword } from '@/app/actions';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -91,7 +91,7 @@ export default function Home() {
     setItems(data || []);
   }
 
-  const toggleAdmin = () => {
+  const toggleAdmin = async () => {
     if (user.isAdmin) {
       if (confirm("Sair do modo Admin?")) {
         const updated = { ...user, isAdmin: false };
@@ -100,7 +100,8 @@ export default function Home() {
       }
     } else {
       const senha = prompt("Senha Admin:");
-      if (senha === ADMIN_PASSWORD) {
+      const isValid = await verifyAdminPassword(senha);
+      if (isValid) {
         const updated = { ...user, isAdmin: true };
         setUser(updated);
         localStorage.setItem('fz_user', JSON.stringify(updated));
@@ -113,7 +114,8 @@ export default function Home() {
   const createRoom = async () => {
     if (!user.isAdmin) {
       const senha = prompt("Senha de Admin:");
-      if (senha !== ADMIN_PASSWORD) return alert("Senha incorreta.");
+      const isValid = await verifyAdminPassword(senha);
+      if (!isValid) return alert("Senha incorreta.");
     }
     const name = prompt("Nome da Sala:");
     if (!name) return;
