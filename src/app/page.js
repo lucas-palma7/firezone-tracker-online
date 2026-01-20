@@ -260,37 +260,43 @@ export default function Home() {
       </header>
 
       {!currentRoom ? (
-        <div id="lobbyScreen">
-          <div id="roomsList">
-            {rooms.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Nenhuma sala aberta.</div>
-            ) : (
-              rooms.map(room => (
-                <div key={room.id} className="room-card" onClick={() => enterRoom(room.id, room.name)}>
-                  <div className="room-info">
-                    <h3>{room.name}</h3>
-                    <div className="room-users">
-                      <div className="user-dot"></div>
-                      #{items.filter(i => i.room_id === room.id).reduce((acc, curr) => acc.add(curr.user_id), new Set()).size} pessoas na lista
+        <>
+          <div id="lobbyScreen">
+            <div id="roomsList">
+              {rooms.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Nenhuma sala aberta.</div>
+              ) : (
+                rooms.map(room => (
+                  <div key={room.id} className="room-card" onClick={() => enterRoom(room.id, room.name)}>
+                    <div className="room-info">
+                      <h3>{room.name}</h3>
+                      <div className="room-users">
+                        <div className="user-dot"></div>
+                        #{items.filter(i => i.room_id === room.id).reduce((acc, curr) => acc.add(curr.user_id), new Set()).size} pessoas na lista
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {user.isAdmin && (
+                        <button
+                          className="btn-admin-small"
+                          onClick={(e) => deleteRoom(e, room.id)}
+                          style={{ border: 'none', background: '#fff0f0', color: '#ff4444', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
+                      <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)', color: '#ccc' }} />
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {user.isAdmin && (
-                      <button className="btn-admin-small" onClick={(e) => deleteRoom(e, room.id)} style={{ background: '#fff0f0', color: '#ff4444' }}>
-                        <Trash2 size={16} />
-                      </button>
-                    )}
-                    <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)' }} />
-                  </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
+            <button className="btn-create-room" onClick={createRoom}>+ Criar Nova Sala</button>
+            <button className={`btn-admin-login ${user.isAdmin ? 'is-logged' : ''}`} onClick={toggleAdmin}>
+              {user.isAdmin ? '✅ Admin Logado' : '🔑 Acesso Admin'}
+            </button>
           </div>
-          <button className="btn-create-room" onClick={createRoom}>+ Criar Nova Sala</button>
-          <button className={`btn-admin-login ${user.isAdmin ? 'is-logged' : ''}`} onClick={toggleAdmin}>
-            {user.isAdmin ? '✅ Admin Logado' : '🔑 Acesso Admin'}
-          </button>
-        </div>
+        </>
       ) : (
         <div id="roomScreen">
           <div className="room-header-bar">
@@ -464,30 +470,33 @@ export default function Home() {
         li { 
           background: white; 
           padding: 16px 20px; 
-          border-radius: 20px; 
-          margin-bottom: 16px; 
-          border: 1px solid #EAEAEA;
-          border-left: 6px solid #000;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
+          border-radius: 12px; 
+          margin-bottom: 14px; 
+          border: 1px solid #eee;
+          border-left: 10px solid #000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
           display: flex;
           justify-content: space-between;
           align-items: center;
-          min-height: 100px;
+          min-height: 85px;
         }
 
-        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 15px; }
-        .item-nome { font-weight: 800; font-size: 19px; color: #000; margin-bottom: 2px; }
-        .item-details { color: #999; font-size: 14px; margin-bottom: 4px; font-weight: 500; }
-        .item-total { font-weight: 900; font-size: 19px; color: #000; }
+        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 15px; gap: 2px; }
+        .item-nome { font-weight: 800; font-size: 17px; color: #000; letter-spacing: -0.3px; }
+        .item-details { color: #999; font-size: 13px; font-weight: 500; }
+        .item-total { font-weight: 900; font-size: 18px; color: #000; margin-top: 1px; }
 
         .controls-container { display: flex; align-items: center; gap: 8px; }
-        .arrow-stack { display: flex; flex-direction: column; background: #f4f4f4; border-radius: 6px; width: 30px; height: 44px; justify-content: space-evenly; align-items: center; }
-        .arrow-stack button { border: none; background: transparent; font-size: 10px; color: #555; padding: 2px; width: 100%; display: flex; justify-content: center; }
-        .btn-edit-square { width: 34px; height: 34px; background: #f4f4f4; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; color: #333; }
+        .arrow-stack { display: flex; flex-direction: column; background: #f5f5f5; border-radius: 8px; width: 32px; height: 42px; justify-content: space-evenly; align-items: center; }
+        .arrow-stack button { border: none; background: transparent; color: #999; padding: 4px; width: 100%; display: flex; justify-content: center; cursor: pointer; transition: color 0.2s; }
+        .arrow-stack button:hover { color: #000; }
+        .btn-edit-square { width: 36px; height: 36px; background: #f5f5f5; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; color: #666; cursor: pointer; transition: all 0.2s; }
+        .btn-edit-square:hover { background: #eee; color: #000; }
         
-        .qty-pill { display: flex; align-items: center; background: #f4f4f4; border-radius: 8px; padding: 4px; height: 34px; box-sizing: border-box; }
-        .qty-btn { width: 24px; height: 24px; background: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .qty-value { min-width: 24px; text-align: center; font-weight: 700; font-size: 14px; }
+        .qty-pill { display: flex; align-items: center; background: #f5f5f5; border-radius: 8px; padding: 3px 5px; height: 36px; box-sizing: border-box; gap: 4px; }
+        .qty-btn { width: 26px; height: 26px; background: white; border: 1px solid #ddd; border-radius: 5px; font-weight: 700; font-size: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; }
+        .qty-btn:active { transform: scale(0.92); }
+        .qty-value { min-width: 18px; text-align: center; font-weight: 800; font-size: 14px; color: #000; }
 
         .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 420px; background: var(--bfr-black); color: white; padding: 12px 20px; border-radius: 14px; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
         .total-value { font-size: 20px; font-weight: 700; }
