@@ -350,6 +350,7 @@ export default function Home() {
                     return (
                       <motion.li
                         key={item.id}
+                        className="item-card"
                         layout
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -467,19 +468,21 @@ export default function Home() {
         .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
         .btn-add { width: 100%; background: var(--bfr-black); color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
 
-        li { 
-          background: #ffffff; 
-          padding: 18px 20px; 
-          border-radius: 16px; 
-          margin-bottom: 20px; 
-          border: 1px solid #eee;
-          border-left: 12px solid #000;
-          box-shadow: 0 6px 15px rgba(0,0,0,0.06); 
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          min-height: 100px;
-          box-sizing: border-box;
+        .item-card { 
+          background: #ffffff !important; 
+          padding: 18px 20px !important; 
+          border-radius: 16px !important; 
+          margin-bottom: 16px !important; 
+          border: 1px solid #f0f0f0 !important;
+          border-left: 12px solid #000 !important;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important; 
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          min-height: 100px !important;
+          box-sizing: border-box !important;
+          width: 100% !important;
+          list-style: none !important;
         }
 
         .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 15px; gap: 4px; }

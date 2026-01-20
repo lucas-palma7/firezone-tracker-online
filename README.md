@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔥 Firezone Tracker Online
 
-## Getting Started
+Firezone Tracker Online é uma aplicação web moderna projetada para facilitar a gestão de comandas e pedidos em tempo real. Originalmente construída em HTML/JS puro, a aplicação foi migrada para **Next.js 16** com **Supabase** para oferecer uma experiência "app-like", segura e escalável.
 
-First, run the development server:
+## 🚀 Tecnologias
 
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Backend/Banco de Dados**: [Supabase](https://supabase.com/) (Real-time subscriptions)
+- **Estilização**: CSS Modules & Styled JSX
+- **Animações**: [Framer Motion](https://www.framer.com/motion/)
+- **Ícones**: [Lucide React](https://lucide.dev/)
+
+## 🛠️ Funcionalidades
+
+- **Lobby Dinâmico**: Criação e seleção de salas em tempo real.
+- **Minha Comanda**: Adição de itens com ajuste de quantidade, edição e reordenação (drag & drop visual).
+- **Ranking da Mesa**: Visualização consolidada de todos os usuários da sala, ordenados por valor total.
+- **Painel Admin**:
+  - Excluir salas completas.
+  - Editar preços e quantidades de qualquer usuário no Ranking.
+  - Excluir usuários específicos da sala.
+- **Design High-Fidelity**: Interface minimalista otimizada para dispositivos móveis.
+
+---
+
+## 💻 Instalação (Ambiente Dev)
+
+Siga os passos abaixo para rodar o projeto localmente:
+
+### 1. Requisitos
+- Node.js (v18 ou superior)
+- NPM ou Yarn
+
+### 2. Clonar o Repositório
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <url-do-seu-repositorio>
+cd firezone-tracker-online
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Instalar Dependências
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 4. Configurar Variáveis de Ambiente
+Crie um arquivo `.env.local` na raiz do projeto com as seguintes chaves:
+```env
+NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anon_do_supabase
+ADMIN_PASSWORD=sua_senha_mestra_admin
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 5. Rodar o Servidor de Desenvolvimento
+```bash
+npm run dev
+```
+Acesse `http://localhost:3000` no seu navegador.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🌐 Implantação (Ambiente Produção - Vercel)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+A aplicação está configurada para ser hospedada no **Vercel**:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Faça o push do código para o seu repositório GitHub.
+2. Conecte o repositório no dashboard do [Vercel](https://vercel.com).
+3. Nas **Environment Variables** do Vercel, adicione as mesmas chaves do seu `.env.local`.
+   - *Nota: Não use o prefixo `NEXT_PUBLIC_` para a `ADMIN_PASSWORD` para garantir que ela permaneça segura no servidor.*
+4. O Vercel detectará automaticamente as configurações do `vercel.json` e realizará o build.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗄️ Estratégia de Banco de Dados (Supabase)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+O Banco de Dados deve conter as seguintes tabelas:
+
+1. **rooms**: `id` (uuid), `name` (text), `created_at` (timestamptz).
+2. **comandas**: `id` (bigint), `room_id` (uuid - FK), `user_id` (text), `user_name` (text), `nome` (text), `preco` (float8), `qtd` (int4), `created_at` (timestamptz).
+
+*Certifique-se de configurar as policies de RLS (Row Level Security) no Supabase se desejar produção estritamente segura.*
+
+---
+Desenvolvido com ❤️ para a torcida do Botafogo.
