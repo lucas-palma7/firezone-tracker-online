@@ -439,9 +439,10 @@ export default function Home() {
         .qty-btn { width: 24px; height: 24px; background: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .qty-value { min-width: 24px; text-align: center; font-weight: 700; font-size: 14px; }
 
-        .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; background: var(--bfr-black); color: white; padding: 12px 20px; border-radius: 14px; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; }
+        .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 420px; background: var(--bfr-black); color: white; padding: 12px 20px; border-radius: 14px; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
         .total-value { font-size: 20px; font-weight: 700; }
-        .btn-trash-dock { background: #333; color: #ff6b6b; border: none; padding: 8px; border-radius: 8px; font-size: 18px; }
+        .btn-trash-dock { background: #333; color: #ff6b6b; border: none; padding: 8px; border-radius: 8px; font-size: 18px; transition: transform 0.2s; }
+        .btn-trash-dock:active { transform: scale(0.9); }
       `}</style>
     </div>
   );
