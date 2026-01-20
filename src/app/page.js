@@ -130,6 +130,17 @@ export default function Home() {
     }
   };
 
+  const deleteRoom = async (e, roomId) => {
+    e.stopPropagation();
+    if (!user.isAdmin) return;
+    if (confirm("🚨 ATENÇÃO: Deletar esta sala e TODOS os pedidos nela?")) {
+      // Cascade delete is usually handled by RLS/DB, but let's be explicit if needed
+      await supabase.from('comandas').delete().eq('room_id', roomId);
+      await supabase.from('rooms').delete().eq('id', roomId);
+      fetchRooms();
+    }
+  };
+
   const enterRoom = (id, name) => {
     setCurrentRoom({ id, name });
     localStorage.setItem('fz_current_room_id', id);
@@ -263,7 +274,14 @@ export default function Home() {
                       #{items.filter(i => i.room_id === room.id).reduce((acc, curr) => acc.add(curr.user_id), new Set()).size} pessoas na lista
                     </div>
                   </div>
-                  <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {user.isAdmin && (
+                      <button className="btn-admin-small" onClick={(e) => deleteRoom(e, room.id)} style={{ background: '#fff0f0', color: '#ff4444' }}>
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                    <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)' }} />
+                  </div>
                 </div>
               ))
             )}
@@ -445,21 +463,22 @@ export default function Home() {
 
         li { 
           background: white; 
-          padding: 15px; 
-          border-radius: 16px; 
-          margin-bottom: 12px; 
-          border-left: 5px solid var(--bfr-black); 
-          box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+          padding: 16px 20px; 
+          border-radius: 20px; 
+          margin-bottom: 16px; 
+          border: 1px solid #EAEAEA;
+          border-left: 6px solid #000;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
           display: flex;
           justify-content: space-between;
           align-items: center;
-          min-height: 80px; 
+          min-height: 100px;
         }
 
-        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 10px; }
-        .item-nome { font-weight: 800; font-size: 16px; color: #000; margin-bottom: 4px; line-height: 1.2; }
-        .item-details { color: #888; font-size: 13px; margin-bottom: 4px; }
-        .item-total { font-weight: 800; font-size: 16px; color: #000; }
+        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 15px; }
+        .item-nome { font-weight: 800; font-size: 19px; color: #000; margin-bottom: 2px; }
+        .item-details { color: #999; font-size: 14px; margin-bottom: 4px; font-weight: 500; }
+        .item-total { font-weight: 900; font-size: 19px; color: #000; }
 
         .controls-container { display: flex; align-items: center; gap: 8px; }
         .arrow-stack { display: flex; flex-direction: column; background: #f4f4f4; border-radius: 6px; width: 30px; height: 44px; justify-content: space-evenly; align-items: center; }
