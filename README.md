@@ -1,83 +1,83 @@
 # 🔥 Firezone Tracker Online
 
-Firezone Tracker Online é uma aplicação web moderna projetada para facilitar a gestão de comandas e pedidos em tempo real. Originalmente construída em HTML/JS puro, a aplicação foi migrada para **Next.js 16** com **Supabase** para oferecer uma experiência "app-like", segura e escalável.
+Firezone Tracker Online is a modern web application designed to facilitate real-time management of tabs and orders. Originally built in pure HTML/JS, the application was migrated to **Next.js 16** with **Supabase** to offer an "app-like", secure, and scalable experience.
 
-## 🚀 Tecnologias
+## 🚀 Technologies
 
 - **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
-- **Backend/Banco de Dados**: [Supabase](https://supabase.com/) (Real-time subscriptions)
-- **Estilização**: CSS Modules & Styled JSX
-- **Animações**: [Framer Motion](https://www.framer.com/motion/)
-- **Ícones**: [Lucide React](https://lucide.dev/)
+- **Backend/Database**: [Supabase](https://supabase.com/) (Real-time subscriptions)
+- **Styling**: CSS Modules & Styled JSX
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
 
-## 🛠️ Funcionalidades
+## 🛠️ Features
 
-- **Lobby Dinâmico**: Criação e seleção de salas em tempo real.
-- **Minha Comanda**: Adição de itens com ajuste de quantidade, edição e reordenação (drag & drop visual).
-- **Ranking da Mesa**: Visualização consolidada de todos os usuários da sala, ordenados por valor total.
-- **Painel Admin**:
-  - Excluir salas completas.
-  - Editar preços e quantidades de qualquer usuário no Ranking.
-  - Excluir usuários específicos da sala.
-- **Design High-Fidelity**: Interface minimalista otimizada para dispositivos móveis.
+- **Dynamic Lobby**: Real-time room creation and selection.
+- **My Tab**: Add items with quantity adjustment, editing, and reordering (visual drag & drop).
+- **Table Ranking**: Consolidated view of all users in the room, sorted by total value.
+- **Admin Panel**:
+  - Delete entire rooms.
+  - Edit prices and quantities for any user in the Ranking.
+  - Remove specific users from the room.
+- **High-Fidelity Design**: Minimalist interface optimized for mobile devices.
 
 ---
 
-## 💻 Instalação (Ambiente Dev)
+## 💻 Installation (Dev Environment)
 
-Siga os passos abaixo para rodar o projeto localmente:
+Follow the steps below to run the project locally:
 
-### 1. Requisitos
-- Node.js (v18 ou superior)
-- NPM ou Yarn
+### 1. Requirements
+- Node.js (v18 or higher)
+- NPM or Yarn
 
-### 2. Clonar o Repositório
+### 2. Clone the Repository
 ```bash
-git clone <url-do-seu-repositorio>
+git clone <your-repository-url>
 cd firezone-tracker-online
 ```
 
-### 3. Instalar Dependências
+### 3. Install Dependencies
 ```bash
 npm install
 ```
 
-### 4. Configurar Variáveis de Ambiente
-Crie um arquivo `.env.local` na raiz do projeto com as seguintes chaves:
+### 4. Configure Environment Variables
+Create a `.env.local` file in the project root with the following keys:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anon_do_supabase
-ADMIN_PASSWORD=sua_senha_mestra_admin
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+ADMIN_PASSWORD=your_admin_master_password
 ```
 
-### 5. Rodar o Servidor de Desenvolvimento
+### 5. Run the Development Server
 ```bash
 npm run dev
 ```
-Acesse `http://localhost:3000` no seu navegador.
+Access `http://localhost:3000` in your browser.
 
 ---
 
-## 🌐 Implantação (Ambiente Produção - Vercel)
+## 🌐 Deployment (Production - Vercel)
 
-A aplicação está configurada para ser hospedada no **Vercel**:
+The application is configured to be hosted on **Vercel**:
 
-1. Faça o push do código para o seu repositório GitHub.
-2. Conecte o repositório no dashboard do [Vercel](https://vercel.com).
-3. Nas **Environment Variables** do Vercel, adicione as mesmas chaves do seu `.env.local`.
-   - *Nota: Não use o prefixo `NEXT_PUBLIC_` para a `ADMIN_PASSWORD` para garantir que ela permaneça segura no servidor.*
-4. O Vercel detectará automaticamente as configurações do `vercel.json` e realizará o build.
+1. Push the code to your GitHub repository.
+2. Connect the repository in the [Vercel](https://vercel.com) dashboard.
+3. In Vercel's **Environment Variables**, add the same keys as your `.env.local`.
+   - *Note: Do not use the `NEXT_PUBLIC_` prefix for `ADMIN_PASSWORD` to ensure it remains secure on the server.*
+4. Vercel will automatically detect `vercel.json` settings and perform the build.
 
 ---
 
-## 🗄️ Estratégia de Banco de Dados (Supabase)
+## 🗄️ Database Strategy (Supabase)
 
-O Banco de Dados deve conter as seguintes tabelas:
+The Database must contain the following tables:
 
 1. **rooms**: `id` (uuid), `name` (text), `created_at` (timestamptz).
 2. **comandas**: `id` (bigint), `room_id` (uuid - FK), `user_id` (text), `user_name` (text), `nome` (text), `preco` (float8), `qtd` (int4), `created_at` (timestamptz).
 
-*Certifique-se de configurar as policies de RLS (Row Level Security) no Supabase se desejar produção estritamente segura.*
+*Make sure to configure RLS (Row Level Security) policies in Supabase if you want strict security in production.*
 
 ---
-Desenvolvido com ❤️ para a torcida do Botafogo.
+Developed with ❤️ for Botafogo fans.
