@@ -78,6 +78,3 @@ The Database must contain the following tables:
 2. **comandas**: `id` (bigint), `room_id` (uuid - FK), `user_id` (text), `user_name` (text), `nome` (text), `preco` (float8), `qtd` (int4), `created_at` (timestamptz).
 
 *Make sure to configure RLS (Row Level Security) policies in Supabase if you want strict security in production.*
-
----
-Developed with ❤️ for Botafogo fans.
