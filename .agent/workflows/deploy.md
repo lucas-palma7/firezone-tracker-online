@@ -20,7 +20,7 @@ Se você ainda não tem, crie um novo repositório no GitHub e suba o código:
 ### 3. Configurações Importantes (CRÍTICO)
 Durante a importação, você deve configurar dois pontos fundamentais:
 
--   **Root Directory**: No campo "Root Directory", clique em **Edit** e selecione a pasta `web`. Isso é essencial porque o Next.js está dentro dessa pasta.
+-   **Root Directory**: No campo "Root Directory", certifique-se de que esteja selecionado o root (**./**). Se você configurou como `web` anteriormente, mude de volta para o diretório raiz, pois os arquivos agora estão na base do repositório.
 -   **Environment Variables**: Abra a seção "Environment Variables" e adicione as chaves que estão no seu arquivo `.env.local`:
     -   `NEXT_PUBLIC_SUPABASE_URL`: `https://hzazuprdotttsbeklvah.supabase.co`
     -   `NEXT_PUBLIC_SUPABASE_ANON_KEY`: `sb_publishable_vo7_cG2rZh_lWOC7KNYacA_TSMQ5RyF`
