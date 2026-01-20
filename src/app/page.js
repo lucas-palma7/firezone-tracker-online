@@ -468,7 +468,7 @@ export default function Home() {
         .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
         .btn-add { width: 100%; background: var(--bfr-black); color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
 
-        .item-card { 
+        :global(.item-card) { 
           background: #ffffff !important; 
           padding: 18px 20px !important; 
           border-radius: 16px !important; 
