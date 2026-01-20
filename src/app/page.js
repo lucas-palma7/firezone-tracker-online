@@ -15,6 +15,7 @@ import {
   Settings,
   Circle
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { verifyAdminPassword } from '@/app/actions';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -213,6 +214,20 @@ export default function Home() {
     }
   };
 
+  const adminDeleteUser = async (playerId) => {
+    if (!user.isAdmin) return;
+    if (confirm("🚨 ATENÇÃO: Deletar este usuário e TODOS os seus pedidos?")) {
+      await supabase.from('comandas').delete().eq('room_id', currentRoom.id).eq('user_id', playerId);
+      fetchItems();
+    }
+  };
+
+  const adminUpdateItem = async (itemId, updates) => {
+    if (!user.isAdmin) return;
+    await supabase.from('comandas').update(updates).eq('id', itemId);
+    fetchItems();
+  };
+
   const formatCurrencyInput = (val) => {
     let v = val.replace(/\D/g, '');
     v = (v / 100).toFixed(2) + '';
@@ -305,40 +320,49 @@ export default function Home() {
               </div>
 
               <ul>
-                {items.filter(i => i.user_id === user.id).map((item, index, filtered) => {
-                  const isEditing = editingId === item.id;
-                  return (
-                    <li key={item.id}>
-                      {isEditing ? (
-                        <div style={{ width: '100%', display: 'flex', gap: '8px', flexDirection: 'column' }}>
-                          <input id={`edit-name-${item.id}`} defaultValue={item.nome} />
-                          <input id={`edit-price-${item.id}`} defaultValue={BRL.format(item.preco)} onInput={(e) => e.target.value = formatCurrencyInput(e.target.value)} />
-                          <button className="btn-add" onClick={() => saveEdit(item.id, document.getElementById(`edit-name-${item.id}`).value, document.getElementById(`edit-price-${item.id}`).value)}>OK</button>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="info-container">
-                            <div className="item-nome">{item.nome}</div>
-                            <div className="item-details">{item.qtd}x {BRL.format(item.preco)}</div>
-                            <div className="item-total">{BRL.format(item.preco * item.qtd)}</div>
+                <AnimatePresence mode="popLayout">
+                  {items.filter(i => i.user_id === user.id).map((item, index, filtered) => {
+                    const isEditing = editingId === item.id;
+                    return (
+                      <motion.li
+                        key={item.id}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      >
+                        {isEditing ? (
+                          <div style={{ width: '100%', display: 'flex', gap: '8px', flexDirection: 'column' }}>
+                            <input id={`edit-name-${item.id}`} defaultValue={item.nome} />
+                            <input id={`edit-price-${item.id}`} defaultValue={BRL.format(item.preco)} onInput={(e) => e.target.value = formatCurrencyInput(e.target.value)} />
+                            <button className="btn-add" onClick={() => saveEdit(item.id, document.getElementById(`edit-name-${item.id}`).value, document.getElementById(`edit-price-${item.id}`).value)}>OK</button>
                           </div>
-                          <div className="controls-container">
-                            <div className="arrow-stack">
-                              <button style={{ visibility: index > 0 ? 'visible' : 'hidden' }} onClick={() => reorder(item.id, 'UP')}><ChevronUp size={14} /></button>
-                              <button style={{ visibility: index < filtered.length - 1 ? 'visible' : 'hidden' }} onClick={() => reorder(item.id, 'DOWN')}><ChevronDown size={14} /></button>
+                        ) : (
+                          <>
+                            <div className="info-container">
+                              <div className="item-nome">{item.nome}</div>
+                              <div className="item-details">{item.qtd}x {BRL.format(item.preco)}</div>
+                              <div className="item-total">{BRL.format(item.preco * item.qtd)}</div>
                             </div>
-                            <button className="btn-edit-square" onClick={() => setEditingId(item.id)}><Pencil size={14} /></button>
-                            <div className="qty-pill">
-                              <button className="qty-btn" onClick={() => updateQty(item.id, item.qtd - 1)}>-</button>
-                              <div className="qty-value">{item.qtd}</div>
-                              <button className="qty-btn" onClick={() => updateQty(item.id, item.qtd + 1)}>+</button>
+                            <div className="controls-container">
+                              <div className="arrow-stack">
+                                <button style={{ visibility: index > 0 ? 'visible' : 'hidden' }} onClick={() => reorder(item.id, 'UP')}><ChevronUp size={14} /></button>
+                                <button style={{ visibility: index < filtered.length - 1 ? 'visible' : 'hidden' }} onClick={() => reorder(item.id, 'DOWN')}><ChevronDown size={14} /></button>
+                              </div>
+                              <button className="btn-edit-square" onClick={() => setEditingId(item.id)}><Pencil size={14} /></button>
+                              <div className="qty-pill">
+                                <button className="qty-btn" onClick={() => updateQty(item.id, item.qtd - 1)}>-</button>
+                                <div className="qty-value">{item.qtd}</div>
+                                <button className="qty-btn" onClick={() => updateQty(item.id, item.qtd + 1)}>+</button>
+                              </div>
                             </div>
-                          </div>
-                        </>
-                      )}
-                    </li>
-                  )
-                })}
+                          </>
+                        )}
+                      </motion.li>
+                    )
+                  })}
+                </AnimatePresence>
               </ul>
             </div>
           ) : (
@@ -349,7 +373,14 @@ export default function Home() {
                 acc[item.user_id].items.push(item);
                 return acc;
               }, {})).sort((a, b) => b.total - a.total).map((player, index) => (
-                <RankingCard key={player.id} player={player} index={index} />
+                <RankingCard
+                  key={player.id}
+                  player={player}
+                  index={index}
+                  isAdmin={user.isAdmin}
+                  onDeleteUser={() => adminDeleteUser(player.id)}
+                  onUpdateItem={adminUpdateItem}
+                />
               ))}
             </div>
           )}
@@ -414,21 +445,20 @@ export default function Home() {
 
         li { 
           background: white; 
-          padding: 15px; 
-          border-radius: 16px; 
-          margin-bottom: 12px; 
-          border-left: 5px solid var(--bfr-black); 
-          box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+          padding: 12px 15px; 
+          border-radius: 12px; 
+          margin-bottom: 10px; 
+          border: 1px solid #f0f0f0;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
           display: flex;
           justify-content: space-between;
           align-items: center;
-          min-height: 80px; 
         }
 
-        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 10px; }
-        .item-nome { font-weight: 800; font-size: 16px; color: #000; margin-bottom: 4px; line-height: 1.2; }
-        .item-details { color: #888; font-size: 13px; margin-bottom: 4px; }
-        .item-total { font-weight: 800; font-size: 16px; color: #000; }
+        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 10px; gap: 2px; }
+        .item-nome { font-weight: 700; font-size: 15px; color: #333; line-height: 1.2; }
+        .item-details { color: #888; font-size: 12px; }
+        .item-total { font-weight: 800; font-size: 15px; color: var(--bfr-black); margin-top: 2px; }
 
         .controls-container { display: flex; align-items: center; gap: 8px; }
         .arrow-stack { display: flex; flex-direction: column; background: #f4f4f4; border-radius: 6px; width: 30px; height: 44px; justify-content: space-evenly; align-items: center; }
@@ -448,8 +478,9 @@ export default function Home() {
   );
 }
 
-function RankingCard({ player, index }) {
+function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [editingItemId, setEditingItemId] = useState(null);
 
   let posIcon = `${index + 1}º`;
   let posClass = 'pos-n';
@@ -466,28 +497,80 @@ function RankingCard({ player, index }) {
         </div>
         <div className="rank-total">
           {BRL.format(player.total)}
-          <span style={{ fontSize: '10px', color: '#999', marginLeft: '4px' }}>{isOpen ? '▲' : '▼'}</span>
+          <span style={{ fontSize: '10px', color: '#999', marginLeft: '6px' }}>{isOpen ? '▲' : '▼'}</span>
         </div>
       </div>
       {isOpen && (
         <div className="rank-details">
-          {player.items.map((i, idx) => (
-            <div key={idx} className="detail-item">
-              <span>{i.qtd}x {i.nome} <span style={{ color: '#999', fontSize: '11px' }}>({BRL.format(i.preco)})</span></span>
-              <span>{BRL.format(i.preco * i.qtd)}</span>
+          {player.items && player.items.map((i, idx) => {
+            const isEditing = editingItemId === i.id;
+            return (
+              <div key={i.id || idx} className="detail-item-container">
+                {isEditing ? (
+                  <div className="admin-edit-form">
+                    <input defaultValue={i.nome} id={`admin-edit-name-${i.id}`} placeholder="Nome" />
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <input defaultValue={i.preco} id={`admin-edit-price-${i.id}`} placeholder="Preço" type="number" step="0.01" />
+                      <input defaultValue={i.qtd} id={`admin-edit-qty-${i.id}`} placeholder="Qtd" type="number" style={{ width: '60px' }} />
+                    </div>
+                    <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+                      <button className="btn-save-admin" onClick={(e) => {
+                        e.stopPropagation();
+                        const updates = {
+                          nome: document.getElementById(`admin-edit-name-${i.id}`).value,
+                          preco: parseFloat(document.getElementById(`admin-edit-price-${i.id}`).value),
+                          qtd: parseInt(document.getElementById(`admin-edit-qty-${i.id}`).value)
+                        };
+                        onUpdateItem(i.id, updates);
+                        setEditingItemId(null);
+                      }}>Salvar</button>
+                      <button className="btn-cancel-admin" onClick={(e) => { e.stopPropagation(); setEditingItemId(null); }}>Cancelar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="detail-item">
+                    <span>{i.qtd}x {i.nome} <span style={{ color: '#999', fontSize: '11px' }}>({BRL.format(i.preco)})</span></span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>{BRL.format(i.preco * i.qtd)}</span>
+                      {isAdmin && (
+                        <button className="btn-admin-small" onClick={(e) => { e.stopPropagation(); setEditingItemId(i.id); }}>
+                          <Pencil size={12} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {isAdmin && (
+            <div className="admin-actions">
+              <button className="btn-delete-user" onClick={(e) => { e.stopPropagation(); onDeleteUser(); }}>
+                <Trash2 size={14} /> Deletar Usuário
+              </button>
             </div>
-          ))}
+          )}
         </div>
       )}
       <style jsx>{`
         .rank-card { background: white; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #f0f0f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .rank-header { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .rank-header { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
+        .rank-header:active { background: #f9f9f9; }
         .rank-info { display: flex; align-items: center; gap: 10px; }
         .rank-pos { font-weight: 900; width: 25px; font-size: 18px; text-align: center; }
         .rank-name { font-weight: 600; font-size: 15px; }
-        .rank-total { font-weight: 800; font-size: 15px; }
+        .rank-total { font-weight: 800; font-size: 15px; color: #333; display: flex; align-items: center; }
         .rank-details { background: #fcfcfc; border-top: 1px solid #eee; }
-        .detail-item { padding: 10px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 13px; color: #555; }
+        .detail-item-container { border-bottom: 1px solid #eee; }
+        .detail-item { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555; }
+        
+        .admin-edit-form { padding: 15px; display: flex; flex-direction: column; gap: 8px; background: #fff9f9; }
+        .admin-actions { padding: 12px; border-top: 1px dashed #eee; display: flex; justify-content: center; }
+        .btn-delete-user { background: #fff5f5; color: #ff4444; border: 1px solid #ffebeb; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-admin-small { background: #f4f4f4; border: none; padding: 6px; border-radius: 6px; color: #666; cursor: pointer; display: flex; align-items: center; }
+        .btn-save-admin { background: var(--bfr-black); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; flex: 1; cursor: pointer; }
+        .btn-cancel-admin { background: #eee; color: #666; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+
         .pos-1 { color: #FFD700; }
         .pos-2 { color: #C0C0C0; }
         .pos-3 { color: #CD7F32; }
