@@ -468,35 +468,36 @@ export default function Home() {
         .btn-add { width: 100%; background: var(--bfr-black); color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
 
         li { 
-          background: white; 
-          padding: 16px 20px; 
-          border-radius: 12px; 
-          margin-bottom: 14px; 
+          background: #ffffff; 
+          padding: 18px 20px; 
+          border-radius: 16px; 
+          margin-bottom: 20px; 
           border: 1px solid #eee;
-          border-left: 10px solid #000;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+          border-left: 12px solid #000;
+          box-shadow: 0 6px 15px rgba(0,0,0,0.06); 
           display: flex;
           justify-content: space-between;
           align-items: center;
-          min-height: 85px;
+          min-height: 100px;
+          box-sizing: border-box;
         }
 
-        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 15px; gap: 2px; }
-        .item-nome { font-weight: 800; font-size: 17px; color: #000; letter-spacing: -0.3px; }
-        .item-details { color: #999; font-size: 13px; font-weight: 500; }
-        .item-total { font-weight: 900; font-size: 18px; color: #000; margin-top: 1px; }
+        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 15px; gap: 4px; }
+        .item-nome { font-weight: 800; font-size: 18px; color: #000; letter-spacing: -0.4px; line-height: 1.1; }
+        .item-details { color: #888; font-size: 14px; font-weight: 500; }
+        .item-total { font-weight: 900; font-size: 19px; color: #000; margin-top: 2px; }
 
-        .controls-container { display: flex; align-items: center; gap: 8px; }
-        .arrow-stack { display: flex; flex-direction: column; background: #f5f5f5; border-radius: 8px; width: 32px; height: 42px; justify-content: space-evenly; align-items: center; }
-        .arrow-stack button { border: none; background: transparent; color: #999; padding: 4px; width: 100%; display: flex; justify-content: center; cursor: pointer; transition: color 0.2s; }
+        .controls-container { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .arrow-stack { display: flex; flex-direction: column; background: #f8f8f8; border-radius: 10px; width: 34px; height: 46px; justify-content: space-evenly; align-items: center; border: 1px solid #f0f0f0; }
+        .arrow-stack button { border: none; background: transparent; color: #aaa; padding: 2px; width: 100%; display: flex; justify-content: center; cursor: pointer; transition: color 0.2s; }
         .arrow-stack button:hover { color: #000; }
-        .btn-edit-square { width: 36px; height: 36px; background: #f5f5f5; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; color: #666; cursor: pointer; transition: all 0.2s; }
+        .btn-edit-square { width: 38px; height: 38px; background: #f8f8f8; border-radius: 10px; border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: center; color: #888; cursor: pointer; transition: all 0.2s; }
         .btn-edit-square:hover { background: #eee; color: #000; }
         
-        .qty-pill { display: flex; align-items: center; background: #f5f5f5; border-radius: 8px; padding: 3px 5px; height: 36px; box-sizing: border-box; gap: 4px; }
-        .qty-btn { width: 26px; height: 26px; background: white; border: 1px solid #ddd; border-radius: 5px; font-weight: 700; font-size: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; }
+        .qty-pill { display: flex; align-items: center; background: #f8f8f8; border-radius: 10px; padding: 4px 6px; height: 38px; box-sizing: border-box; gap: 6px; border: 1px solid #f0f0f0; }
+        .qty-btn { width: 28px; height: 28px; background: white; border: 1px solid #eee; border-radius: 6px; font-weight: 700; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; }
         .qty-btn:active { transform: scale(0.92); }
-        .qty-value { min-width: 18px; text-align: center; font-weight: 800; font-size: 14px; color: #000; }
+        .qty-value { min-width: 20px; text-align: center; font-weight: 800; font-size: 15px; color: #000; }
 
         .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 420px; background: var(--bfr-black); color: white; padding: 12px 20px; border-radius: 14px; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
         .total-value { font-size: 20px; font-weight: 700; }
