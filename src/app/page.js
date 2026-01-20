@@ -445,20 +445,21 @@ export default function Home() {
 
         li { 
           background: white; 
-          padding: 12px 15px; 
-          border-radius: 12px; 
-          margin-bottom: 10px; 
-          border: 1px solid #f0f0f0;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
+          padding: 15px; 
+          border-radius: 16px; 
+          margin-bottom: 12px; 
+          border-left: 5px solid var(--bfr-black); 
+          box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
           display: flex;
           justify-content: space-between;
           align-items: center;
+          min-height: 80px; 
         }
 
-        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 10px; gap: 2px; }
-        .item-nome { font-weight: 700; font-size: 15px; color: #333; line-height: 1.2; }
-        .item-details { color: #888; font-size: 12px; }
-        .item-total { font-weight: 800; font-size: 15px; color: var(--bfr-black); margin-top: 2px; }
+        .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 10px; }
+        .item-nome { font-weight: 800; font-size: 16px; color: #000; margin-bottom: 4px; line-height: 1.2; }
+        .item-details { color: #888; font-size: 13px; margin-bottom: 4px; }
+        .item-total { font-weight: 800; font-size: 16px; color: #000; }
 
         .controls-container { display: flex; align-items: center; gap: 8px; }
         .arrow-stack { display: flex; flex-direction: column; background: #f4f4f4; border-radius: 6px; width: 30px; height: 44px; justify-content: space-evenly; align-items: center; }
