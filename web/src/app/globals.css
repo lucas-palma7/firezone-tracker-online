@@ -1,0 +1,48 @@
+:root {
+  --bfr-black: #000000;
+  --bfr-white: #FFFFFF;
+  --bg-page: #F4F4F4;
+  --bg-card: #FFFFFF;
+  --gold: #FFD700;
+  --silver: #C0C0C0;
+  --bronze: #CD7F32;
+  --danger: #ff4444;
+  --edit: #3498db;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: local('Aptos'), local('Aptos Display'), local('Segoe UI'), local('-apple-system');
+}
+
+body {
+  font-family: 'Aptos', sans-serif;
+  background: var(--bg-page);
+  margin: 0;
+  padding: 20px 15px;
+  color: var(--bfr-black);
+  padding-bottom: 90px;
+  min-height: 100vh;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #E0E0E0;
+  background: #F8F8F8;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
