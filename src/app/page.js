@@ -22,6 +22,18 @@ import { verifyAdminPassword } from '@/app/actions';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
+const formatCurrencyInput = (val) => {
+  let v = val.replace(/\D/g, '');
+  v = (v / 100).toFixed(2) + '';
+  v = v.replace(".", ",");
+  v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+  return "R$ " + v;
+};
+
+const parseCurrency = (val) => {
+  return parseFloat(val.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+};
+
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -37,6 +49,10 @@ export default function Home() {
   const [newItemName, setNewItemName] = useState('');
   const [newItemPrice, setNewItemPrice] = useState('R$ 0,00');
   const [newItemQty, setNewItemQty] = useState(1);
+
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordCallback, setPasswordCallback] = useState(null);
+
 
 
 
@@ -97,6 +113,21 @@ export default function Home() {
     setItems(data || []);
   }
 
+  const promptAdminPassword = (callback) => {
+    setPasswordCallback(() => callback);
+    setShowPasswordModal(true);
+  };
+
+  const handlePasswordSuccess = async (password) => {
+    const isValid = await verifyAdminPassword(password);
+    if (isValid) {
+      setShowPasswordModal(false);
+      if (passwordCallback) passwordCallback();
+    } else {
+      alert("Senha incorreta.");
+    }
+  };
+
   const toggleAdmin = () => {
     if (user.isAdmin) {
       if (confirm("Sair do modo Admin?")) {
@@ -105,40 +136,36 @@ export default function Home() {
         localStorage.setItem('fz_user', JSON.stringify(updated));
       }
     } else {
-      setTimeout(async () => {
-        const senha = prompt("Senha Admin:");
-        if (!senha) return;
-        const isValid = await verifyAdminPassword(senha);
-        if (isValid) {
-          const updated = { ...user, isAdmin: true };
-          setUser(updated);
-          localStorage.setItem('fz_user', JSON.stringify(updated));
-        } else {
-          alert("Senha incorreta.");
-        }
-      }, 50);
+      promptAdminPassword(() => {
+        const updated = { ...user, isAdmin: true };
+        setUser(updated);
+        localStorage.setItem('fz_user', JSON.stringify(updated));
+      });
     }
   };
 
   const createRoom = async () => {
-    setTimeout(async () => {
-      if (!user.isAdmin) {
-        const senha = prompt("Senha de Admin:");
-        if (!senha) return;
-        const isValid = await verifyAdminPassword(senha);
-        if (!isValid) return alert("Senha incorreta.");
-      }
-      const name = prompt("Nome da Sala:");
-      if (!name) return;
+    const proceed = () => {
+      setTimeout(() => {
+        const name = prompt("Nome da Sala:");
+        if (!name) return;
 
-      const { data, error } = await supabase.from('rooms').insert({ name }).select();
-      if (error) {
-        alert("Erro ao criar sala.");
-      } else {
-        enterRoom(data[0].id, data[0].name);
-        fetchRooms();
-      }
-    }, 50);
+        supabase.from('rooms').insert({ name }).select().then(({ data, error }) => {
+          if (error) {
+            alert("Erro ao criar sala.");
+          } else {
+            enterRoom(data[0].id, data[0].name);
+            fetchRooms();
+          }
+        });
+      }, 50);
+    };
+
+    if (!user.isAdmin) {
+      promptAdminPassword(proceed);
+    } else {
+      proceed();
+    }
   };
 
   const deleteRoom = async (e, roomId) => {
@@ -167,7 +194,7 @@ export default function Home() {
   };
 
   const addItem = async () => {
-    const price = parseFloat(newItemPrice.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const price = parseCurrency(newItemPrice);
     if (newItemName && price > 0) {
       await supabase.from('comandas').insert({
         room_id: currentRoom.id,
@@ -200,7 +227,7 @@ export default function Home() {
   };
 
   const saveEdit = async (id, name, priceStr) => {
-    const price = parseFloat(priceStr.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const price = parseCurrency(priceStr);
     if (name && price > 0) {
       await supabase.from('comandas').update({ nome: name, preco: price }).eq('id', id);
       setEditingId(null);
@@ -248,6 +275,25 @@ export default function Home() {
     }
   };
 
+  const adminDeleteItem = async (itemId) => {
+    if (!user.isAdmin) return;
+    await supabase.from('comandas').delete().eq('id', itemId);
+    fetchItems();
+  };
+
+  const adminAddItem = async (playerId, playerName, itemData) => {
+    if (!user.isAdmin) return;
+    await supabase.from('comandas').insert({
+      room_id: currentRoom.id,
+      user_id: playerId,
+      user_name: playerName,
+      nome: itemData.nome,
+      preco: itemData.preco,
+      qtd: itemData.qtd
+    });
+    fetchItems();
+  };
+
   const adminUpdateItem = async (itemId, updates) => {
     if (!user.isAdmin) return;
     await supabase.from('comandas').update(updates).eq('id', itemId);
@@ -262,10 +308,16 @@ export default function Home() {
     return "R$ " + v;
   };
 
+
   if (!mounted || loading || !user) return <div className="loading">Carregando...</div>;
 
   return (
     <div className="container">
+      <PasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onSuccess={handlePasswordSuccess}
+      />
       <header>
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg" alt="Botafogo" className="bfr-logo" />
         <h1>Firezone</h1>
@@ -296,7 +348,10 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="room-actions">
-                        <div className="room-total-preview">{BRL.format(roomTotal)}</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginRight: '4px' }}>
+                          <span style={{ fontSize: '10px', color: '#888', fontWeight: '600' }}>Total</span>
+                          <div className="room-total-preview">{BRL.format(roomTotal)}</div>
+                        </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           {user.isAdmin && (
                             <button
@@ -429,6 +484,8 @@ export default function Home() {
                   isAdmin={user.isAdmin}
                   onDeleteUser={() => adminDeleteUser(player.id)}
                   onUpdateItem={adminUpdateItem}
+                  onDeleteItem={adminDeleteItem}
+                  onAddItem={adminAddItem}
                 />
               ))}
             </div>
@@ -540,9 +597,52 @@ export default function Home() {
   );
 }
 
-function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem }) {
+function PasswordModal({ isOpen, onClose, onSuccess }) {
+  const [password, setPassword] = useState('');
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <h3>Senha Admin</h3>
+        <input
+          type="password"
+          placeholder="Digite a senha..."
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              onSuccess(password);
+              setPassword('');
+            }
+          }}
+          autoFocus
+        />
+        <div className="modal-actions">
+          <button className="btn-confirm" onClick={() => { onSuccess(password); setPassword(''); }}>Confirmar</button>
+          <button className="btn-cancel" onClick={onClose}>Cancelar</button>
+        </div>
+      </div>
+      <style jsx>{`
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        h3 { margin-top: 0; margin-bottom: 15px; text-align: center; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-size: 16px; }
+        .modal-actions { display: flex; gap: 10px; }
+        button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-confirm { background: #000; color: white; }
+        .btn-cancel { background: #eee; color: #333; }
+      `}</style>
+    </div>
+  );
+}
+
+function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem, onDeleteItem, onAddItem }) {
   const [isOpen, setIsOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   let posIcon = `${index + 1}º`;
   let posClass = 'pos-n';
@@ -572,19 +672,37 @@ function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem }) {
                   <div className="admin-edit-form">
                     <input defaultValue={i.nome} id={`admin-edit-name-${i.id}`} placeholder="Nome" />
                     <div style={{ display: 'flex', gap: '5px' }}>
-                      <input defaultValue={i.preco} id={`admin-edit-price-${i.id}`} placeholder="Preço" type="number" step="0.01" />
+                      <input
+                        defaultValue={formatCurrencyInput(i.preco.toFixed(2))}
+                        id={`admin-edit-price-${i.id}`}
+                        placeholder="R$ 0,00"
+                        onInput={(e) => e.target.value = formatCurrencyInput(e.target.value)}
+                      />
                       <input defaultValue={i.qtd} id={`admin-edit-qty-${i.id}`} placeholder="Qtd" type="number" style={{ width: '60px' }} />
                     </div>
                     <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
                       <button className="btn-save-admin" onClick={(e) => {
                         e.stopPropagation();
-                        const updates = {
-                          nome: document.getElementById(`admin-edit-name-${i.id}`).value,
-                          preco: parseFloat(document.getElementById(`admin-edit-price-${i.id}`).value),
-                          qtd: parseInt(document.getElementById(`admin-edit-qty-${i.id}`).value)
-                        };
-                        onUpdateItem(i.id, updates);
-                        setEditingItemId(null);
+                        // Use Number() for robust parsing
+                        let qtyInput = document.getElementById(`admin-edit-qty-${i.id}`).value;
+                        const newQtd = qtyInput === '' ? 0 : parseInt(qtyInput);
+
+                        if (newQtd <= 0) {
+                          if (confirm("Remover este item?")) {
+                            onDeleteItem(i.id);
+                            setEditingItemId(null);
+                          }
+                          // If cancelled, keep editing? Or close? User said "pop up doesn't appear", so let's ensure it does.
+                          // If they explicitly put 0, they probably mean delete.
+                        } else {
+                          const updates = {
+                            nome: document.getElementById(`admin-edit-name-${i.id}`).value,
+                            preco: parseCurrency(document.getElementById(`admin-edit-price-${i.id}`).value),
+                            qtd: newQtd
+                          };
+                          onUpdateItem(i.id, updates);
+                          setEditingItemId(null);
+                        }
                       }}>Salvar</button>
                       <button className="btn-cancel-admin" onClick={(e) => { e.stopPropagation(); setEditingItemId(null); }}>Cancelar</button>
                     </div>
@@ -605,12 +723,51 @@ function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem }) {
               </div>
             );
           })}
+
           {isAdmin && (
-            <div className="admin-actions">
-              <button className="btn-delete-user" onClick={(e) => { e.stopPropagation(); onDeleteUser(); }}>
-                <Trash2 size={14} /> Deletar Usuário
-              </button>
-            </div>
+            <>
+              {isAdding ? (
+                <div className="admin-edit-form" style={{ borderTop: '1px solid #eee' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '8px' }}>Adicionar Item para {player.name}</div>
+                  <input id={`admin-add-name-${player.id}`} placeholder="Nome do Item" />
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <input
+                      id={`admin-add-price-${player.id}`}
+                      placeholder="R$ 0,00"
+                      defaultValue="R$ 0,00"
+                      onInput={(e) => e.target.value = formatCurrencyInput(e.target.value)}
+                    />
+                    <input id={`admin-add-qty-${player.id}`} placeholder="Qtd" type="number" defaultValue="1" style={{ width: '60px' }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+                    <button className="btn-save-admin" onClick={(e) => {
+                      e.stopPropagation();
+                      const itemData = {
+                        nome: document.getElementById(`admin-add-name-${player.id}`).value,
+                        preco: parseCurrency(document.getElementById(`admin-add-price-${player.id}`).value),
+                        qtd: parseInt(document.getElementById(`admin-add-qty-${player.id}`).value)
+                      };
+                      if (itemData.nome && itemData.preco > 0) {
+                        onAddItem(player.id, player.name, itemData);
+                        setIsAdding(false);
+                      } else {
+                        alert("Preencha nome e preço.");
+                      }
+                    }}>Adicionar</button>
+                    <button className="btn-cancel-admin" onClick={(e) => { e.stopPropagation(); setIsAdding(false); }}>Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="admin-actions" style={{ gap: '10px' }}>
+                  <button className="btn-admin-small" onClick={(e) => { e.stopPropagation(); setIsAdding(true); }} style={{ width: 'auto', padding: '8px 12px', background: '#e8f5e9', color: '#2e7d32', fontWeight: '700', fontSize: '12px', gap: '6px' }}>
+                    <Plus size={14} /> Adicionar Item
+                  </button>
+                  <button className="btn-delete-user" onClick={(e) => { e.stopPropagation(); onDeleteUser(); }}>
+                    <Trash2 size={14} /> Deletar Usuário
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -627,7 +784,7 @@ function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem }) {
         .detail-item { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555; }
         
         .admin-edit-form { padding: 15px; display: flex; flex-direction: column; gap: 8px; background: #fff9f9; }
-        .admin-actions { padding: 12px; border-top: 1px dashed #eee; display: flex; justify-content: center; }
+        .admin-actions { padding: 12px; border-top: 1px dashed #eee; display: flex; justify-content: center; align-items: center; }
         .btn-delete-user { background: #fff5f5; color: #ff4444; border: 1px solid #ffebeb; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .btn-admin-small { background: #f4f4f4; border: none; padding: 6px; border-radius: 6px; color: #666; cursor: pointer; display: flex; align-items: center; }
         .btn-save-admin { background: var(--bfr-black); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; flex: 1; cursor: pointer; }
