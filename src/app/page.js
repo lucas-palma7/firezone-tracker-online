@@ -13,6 +13,7 @@ import {
   Trophy,
   LogOut,
   User,
+  Users,
   Settings,
   Circle
 } from 'lucide-react';
@@ -27,34 +28,41 @@ export default function Home() {
   const [rooms, setRooms] = useState([]);
   const [currentRoom, setCurrentRoom] = useState(null);
   const [items, setItems] = useState([]);
+  const [lobbyItems, setLobbyItems] = useState([]);
   const [view, setView] = useState('minha'); // 'minha' or 'ranking'
   const [editingId, setEditingId] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // Form states
+  const [mounted, setMounted] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [newItemPrice, setNewItemPrice] = useState('R$ 0,00');
   const [newItemQty, setNewItemQty] = useState(1);
 
+
+
   useEffect(() => {
-    // 1. Initialize User
-    const savedUser = localStorage.getItem('fz_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    } else {
-      router.push('/login');
+    setMounted(true);
+
+    async function init() {
+      const savedUser = localStorage.getItem('fz_user');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      } else {
+        router.push('/login');
+        return;
+      }
+
+      const savedRoomId = localStorage.getItem('fz_current_room_id');
+      const savedRoomName = localStorage.getItem('fz_current_room_name');
+      if (savedRoomId && savedRoomName) {
+        setCurrentRoom({ id: savedRoomId, name: savedRoomName });
+      }
+
+      await fetchRooms();
+      setLoading(false);
     }
 
-    // 2. Clear room if not saved
-    const savedRoomId = localStorage.getItem('fz_current_room_id');
-    const savedRoomName = localStorage.getItem('fz_current_room_name');
-    if (savedRoomId && savedRoomName) {
-      setCurrentRoom({ id: savedRoomId, name: savedRoomName });
-    }
-
-    fetchRooms();
-    setLoading(false);
+    init();
   }, []);
 
   useEffect(() => {
@@ -77,8 +85,10 @@ export default function Home() {
   }, [currentRoom]);
 
   async function fetchRooms() {
-    const { data } = await supabase.from('rooms').select('*').order('created_at', { ascending: false });
-    setRooms(data || []);
+    const { data: roomsData } = await supabase.from('rooms').select('*').order('created_at', { ascending: false });
+    const { data: itemsData } = await supabase.from('comandas').select('*');
+    setRooms(roomsData || []);
+    setLobbyItems(itemsData || []);
   }
 
   async function fetchItems() {
@@ -87,7 +97,7 @@ export default function Home() {
     setItems(data || []);
   }
 
-  const toggleAdmin = async () => {
+  const toggleAdmin = () => {
     if (user.isAdmin) {
       if (confirm("Sair do modo Admin?")) {
         const updated = { ...user, isAdmin: false };
@@ -95,34 +105,40 @@ export default function Home() {
         localStorage.setItem('fz_user', JSON.stringify(updated));
       }
     } else {
-      const senha = prompt("Senha Admin:");
-      const isValid = await verifyAdminPassword(senha);
-      if (isValid) {
-        const updated = { ...user, isAdmin: true };
-        setUser(updated);
-        localStorage.setItem('fz_user', JSON.stringify(updated));
-      } else if (senha) {
-        alert("Senha incorreta.");
-      }
+      setTimeout(async () => {
+        const senha = prompt("Senha Admin:");
+        if (!senha) return;
+        const isValid = await verifyAdminPassword(senha);
+        if (isValid) {
+          const updated = { ...user, isAdmin: true };
+          setUser(updated);
+          localStorage.setItem('fz_user', JSON.stringify(updated));
+        } else {
+          alert("Senha incorreta.");
+        }
+      }, 50);
     }
   };
 
   const createRoom = async () => {
-    if (!user.isAdmin) {
-      const senha = prompt("Senha de Admin:");
-      const isValid = await verifyAdminPassword(senha);
-      if (!isValid) return alert("Senha incorreta.");
-    }
-    const name = prompt("Nome da Sala:");
-    if (!name) return;
+    setTimeout(async () => {
+      if (!user.isAdmin) {
+        const senha = prompt("Senha de Admin:");
+        if (!senha) return;
+        const isValid = await verifyAdminPassword(senha);
+        if (!isValid) return alert("Senha incorreta.");
+      }
+      const name = prompt("Nome da Sala:");
+      if (!name) return;
 
-    const { data, error } = await supabase.from('rooms').insert({ name }).select();
-    if (error) {
-      alert("Erro ao criar sala.");
-    } else {
-      enterRoom(data[0].id, data[0].name);
-      fetchRooms();
-    }
+      const { data, error } = await supabase.from('rooms').insert({ name }).select();
+      if (error) {
+        alert("Erro ao criar sala.");
+      } else {
+        enterRoom(data[0].id, data[0].name);
+        fetchRooms();
+      }
+    }, 50);
   };
 
   const deleteRoom = async (e, roomId) => {
@@ -137,10 +153,12 @@ export default function Home() {
   };
 
   const enterRoom = (id, name) => {
+    setItems([]); // Clear previous items to avoid pollution
     setCurrentRoom({ id, name });
     localStorage.setItem('fz_current_room_id', id);
     localStorage.setItem('fz_current_room_name', name);
   };
+
 
   const exitRoom = () => {
     setCurrentRoom(null);
@@ -169,10 +187,12 @@ export default function Home() {
 
   const updateQty = async (id, newQty) => {
     if (newQty <= 0) {
-      if (confirm("Remover item?")) {
-        await supabase.from('comandas').delete().eq('id', id);
-        fetchItems();
-      }
+      setTimeout(async () => {
+        if (confirm("Remover item?")) {
+          await supabase.from('comandas').delete().eq('id', id);
+          fetchItems();
+        }
+      }, 50);
     } else {
       await supabase.from('comandas').update({ qtd: newQty }).eq('id', id);
       fetchItems();
@@ -242,7 +262,7 @@ export default function Home() {
     return "R$ " + v;
   };
 
-  if (loading || !user) return <div className="loading">Carregando...</div>;
+  if (!mounted || loading || !user) return <div className="loading">Carregando...</div>;
 
   return (
     <div className="container">
@@ -261,29 +281,38 @@ export default function Home() {
               {rooms.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Nenhuma sala aberta.</div>
               ) : (
-                rooms.map(room => (
-                  <div key={room.id} className="room-card" onClick={() => enterRoom(room.id, room.name)}>
-                    <div className="room-info">
-                      <h3>{room.name}</h3>
-                      <div className="room-users">
-                        <div className="user-dot"></div>
-                        #{items.filter(i => i.room_id === room.id).reduce((acc, curr) => acc.add(curr.user_id), new Set()).size} pessoas na lista
+                rooms.map(room => {
+                  const roomItems = lobbyItems.filter(i => i.room_id === room.id);
+                  const participants = new Set(roomItems.map(i => i.user_id)).size;
+                  const roomTotal = roomItems.reduce((acc, curr) => acc + (curr.preco * curr.qtd), 0);
+
+                  return (
+                    <div key={room.id} className="room-card" onClick={() => enterRoom(room.id, room.name)}>
+                      <div className="room-info">
+                        <h3>{room.name}</h3>
+                        <div className="room-users">
+                          <Users size={14} />
+                          <span>{participants}</span>
+                        </div>
+                      </div>
+                      <div className="room-actions">
+                        <div className="room-total-preview">{BRL.format(roomTotal)}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          {user.isAdmin && (
+                            <button
+                              className="btn-admin-small"
+                              onClick={(e) => deleteRoom(e, room.id)}
+                              style={{ border: 'none', background: '#fff0f0', color: '#ff4444', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          )}
+                          <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)', color: '#ccc' }} />
+                        </div>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      {user.isAdmin && (
-                        <button
-                          className="btn-admin-small"
-                          onClick={(e) => deleteRoom(e, room.id)}
-                          style={{ border: 'none', background: '#fff0f0', color: '#ff4444', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      )}
-                      <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)', color: '#ccc' }} />
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
             <button className="btn-create-room" onClick={createRoom}>+ Criar Nova Sala</button>
@@ -428,6 +457,8 @@ export default function Home() {
         </div>
       )}
 
+
+
       <style jsx>{`
         header { text-align: center; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; width: 100%; }
         .bfr-logo { width: 60px; height: 60px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
@@ -445,8 +476,9 @@ export default function Home() {
           cursor: pointer;
         }
         .room-info h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 700; word-break: break-word; }
-        .room-users { font-size: 11px; color: #888; display: flex; align-items: center; gap: 6px; font-weight: 500; margin-top: 5px; }
-        .user-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
+        .room-users { font-size: 14px; color: #888; display: flex; align-items: center; gap: 6px; font-weight: 600; margin-top: 5px; }
+        .room-actions { display: flex; align-items: center; gap: 20px; }
+        .room-total-preview { font-weight: 800; font-size: 16px; color: #000; }
 
         .btn-create-room { width: 100%; background: white; border: 2px dashed #ccc; color: #666; padding: 15px; border-radius: 16px; font-weight: 700; margin-bottom: 15px; }
         .btn-admin-login { background: transparent; border: 1px solid #ddd; color: #555; padding: 8px 15px; border-radius: 20px; font-size: 12px; margin: 0 auto; font-weight: 600; display: block; }
@@ -501,6 +533,8 @@ export default function Home() {
         .total-value { font-size: 20px; font-weight: 700; }
         .btn-trash-dock { background: #333; color: #ff6b6b; border: none; padding: 8px; border-radius: 8px; font-size: 18px; transition: transform 0.2s; }
         .btn-trash-dock:active { transform: scale(0.9); }
+
+
       `}</style>
     </div>
   );
