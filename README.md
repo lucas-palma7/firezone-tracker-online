@@ -12,14 +12,20 @@ Firezone Tracker Online is a modern web application designed to facilitate real-
 
 ## 🛠️ Features
 
-- **Dynamic Lobby**: Real-time room creation and selection.
+- **Dynamic Lobby**:
+  - Real-time room creation and selection.
+  - Live preview of **total room value** and **active participants** card.
 - **My Tab**: Add items with quantity adjustment, editing, and reordering (visual drag & drop).
 - **Table Ranking**: Consolidated view of all users in the room, sorted by total value.
 - **Admin Panel**:
-  - Delete entire rooms.
-  - Edit prices and quantities for any user in the Ranking.
-  - Remove specific users from the room.
-- **High-Fidelity Design**: Minimalist interface optimized for mobile devices.
+  - **Secure Access**: Password-protected admin mode with masked input.
+  - **Room Management**: Create and delete rooms (includes all associated orders).
+  - **User Management**: Remove specific users and wipe their tabs.
+  - **Item Control**:
+    - **Edit**: Modify name, price (with `R$ X,XX` formatting), and quantity for any user.
+    - **Add**: Directly add new items to any user's tab from the Ranking view.
+    - **Delete**: Remove items by setting quantity to 0 or confirming deletion.
+- **High-Fidelity Design**: Minimalist interface optimized for mobile devices with framer-motion animations.
 
 ---
 
