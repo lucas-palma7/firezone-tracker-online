@@ -191,6 +191,7 @@ export default function Home() {
     setCurrentRoom(null);
     localStorage.removeItem('fz_current_room_id');
     localStorage.removeItem('fz_current_room_name');
+    fetchRooms(); // Refresh lobby data to update totals
   };
 
   const addItem = async () => {
