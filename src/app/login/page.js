@@ -1,32 +1,49 @@
+/**
+ * Login page component
+ * @module app/login/page
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
+import { createUser, saveUser, getUser } from '@/services/auth.service';
 
+/**
+ * Login page component
+ * Allows users to enter their name and create/retrieve their account
+ * Automatically redirects if user is already logged in
+ * 
+ * @returns {JSX.Element} Login page
+ */
 export default function Login() {
   const [name, setName] = useState('');
   const router = useRouter();
 
+  /**
+   * Check if user is already logged in on mount
+   * Redirect to home if user exists in localStorage
+   */
   useEffect(() => {
-    const savedUser = localStorage.getItem('fz_user');
+    const savedUser = getUser();
     if (savedUser) {
       router.push('/');
     }
   }, [router]);
 
+  /**
+   * Handles login form submission
+   * Creates a new user and saves to localStorage
+   * @param {React.FormEvent} e - Form submit event
+   */
   const handleLogin = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    const newUser = {
-      id: 'u_' + Math.random().toString(36).substr(2, 9),
-      name: name.trim(),
-      isAdmin: false
-    };
-
-    localStorage.setItem('fz_user', JSON.stringify(newUser));
+    const newUser = createUser(name);
+    saveUser(newUser);
     router.push('/');
   };
 
