@@ -1,13 +1,80 @@
 :root {
-  --bfr-black: #000000;
-  --bfr-white: #FFFFFF;
+  /* Light Theme (Default) */
   --bg-page: #F4F4F4;
   --bg-card: #FFFFFF;
+  --bg-hover: #F0F0F0;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --border-color: #E0E0E0;
+
+  --input-bg: #F8F8F8;
+  --input-border: #E0E0E0;
+
+  --nav-bg: #e0e0e0;
+  --nav-item-active-bg: #000000;
+  --nav-item-active-text: #FFFFFF;
+
+  --bfr-black: #000000;
+  --bfr-white: #FFFFFF;
+
   --gold: #FFD700;
   --silver: #C0C0C0;
   --bronze: #CD7F32;
   --danger: #ff4444;
-  --edit: #3498db;
+  --danger-bg: #fff0f0;
+  --danger-border: #ffebeb;
+
+  --success-bg: #e8f5e9;
+  --success-text: #2e7d32;
+  --success-border: #c8e6c9;
+
+  --btn-primary-bg: #000000;
+  --btn-primary-text: #FFFFFF;
+  --btn-secondary-bg: #F8F8F8;
+  --btn-secondary-text: #666666;
+  --btn-secondary-border: #F0F0F0;
+
+  --dock-bg: #000000;
+  --dock-text: #FFFFFF;
+  --dock-btn-bg: #333333;
+}
+
+[data-theme='dark'] {
+  --bg-page: #121212;
+  --bg-card: #1E1E1E;
+  --bg-hover: #2C2C2C;
+  --text-primary: #EDEDED;
+  --text-secondary: #AAAAAA;
+  --border-color: #333333;
+
+  --input-bg: #2C2C2C;
+  --input-border: #444444;
+
+  --nav-bg: #2C2C2C;
+  --nav-item-active-bg: #FFFFFF;
+  --nav-item-active-text: #000000;
+
+  --bfr-black: #FFFFFF;
+  /* Invert for dark mode where applicable */
+  --bfr-white: #000000;
+
+  --danger: #ff6b6b;
+  --danger-bg: #3e2626;
+  --danger-border: #5c3030;
+
+  --success-bg: #1e3323;
+  --success-text: #4caf50;
+  --success-border: #2e4d36;
+
+  --btn-primary-bg: #EDEDED;
+  --btn-primary-text: #000000;
+  --btn-secondary-bg: #2C2C2C;
+  --btn-secondary-text: #AAAAAA;
+  --btn-secondary-border: #333333;
+
+  --dock-bg: #1E1E1E;
+  --dock-text: #EDEDED;
+  --dock-btn-bg: #333333;
 }
 
 @font-face {
@@ -19,10 +86,11 @@ body {
   font-family: 'Aptos', sans-serif;
   background: var(--bg-page);
   margin: 0;
-  color: var(--bfr-black);
+  color: var(--text-primary);
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -41,13 +109,14 @@ ul {
 
 input {
   width: 100%;
-  border: 1px solid #E0E0E0;
-  background: #F8F8F8;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
   border-radius: 8px;
   padding: 10px;
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
+  color: var(--text-primary);
 }
 
 button {

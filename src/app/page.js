@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { verifyAdminPassword } from '@/app/actions';
+import ThemeToggle from './components/ThemeToggle';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -319,7 +320,13 @@ export default function Home() {
         onClose={() => setShowPasswordModal(false)}
         onSuccess={handlePasswordSuccess}
       />
+      <div className="theme-toggle-mobile">
+        <ThemeToggle />
+      </div>
       <header>
+        <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
+          <ThemeToggle />
+        </div>
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg" alt="Botafogo" className="bfr-logo" />
         <h1>Firezone</h1>
         <div className="subtitle">
@@ -332,7 +339,7 @@ export default function Home() {
           <div id="lobbyScreen">
             <div id="roomsList">
               {rooms.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Nenhuma sala aberta.</div>
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Nenhuma sala aberta.</div>
               ) : (
                 rooms.map(room => {
                   const roomItems = lobbyItems.filter(i => i.room_id === room.id);
@@ -350,7 +357,7 @@ export default function Home() {
                       </div>
                       <div className="room-actions">
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginRight: '4px' }}>
-                          <span style={{ fontSize: '10px', color: '#888', fontWeight: '600' }}>Total</span>
+                          <span style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '600' }}>Total</span>
                           <div className="room-total-preview">{BRL.format(roomTotal)}</div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -358,12 +365,12 @@ export default function Home() {
                             <button
                               className="btn-admin-small"
                               onClick={(e) => deleteRoom(e, room.id)}
-                              style={{ border: 'none', background: '#fff0f0', color: '#ff4444', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                              style={{ border: 'none', background: 'var(--danger-bg)', color: 'var(--danger)', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                             >
                               <Trash2 size={18} />
                             </button>
                           )}
-                          <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)', color: '#ccc' }} />
+                          <ChevronDown className="arrow-right" style={{ transform: 'rotate(-90deg)', color: 'var(--text-secondary)' }} />
                         </div>
                       </div>
                     </div>
@@ -518,48 +525,54 @@ export default function Home() {
 
 
       <style jsx>{`
-        header { text-align: center; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        header { text-align: center; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; }
+        .theme-toggle-mobile { display: none; position: absolute; top: 20px; right: 20px; z-index: 10; }
+        @media (max-width: 600px) {
+           .theme-toggle-mobile { display: block; }
+           header > div { display: none !important; }
+        }
         .bfr-logo { width: 60px; height: 60px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
-        h1 { font-size: 24px; letter-spacing: -1px; margin: 0; font-weight: 800; text-align: center; width: 100%; }
-        .subtitle { font-size: 14px; color: #666; margin-top: 5px; font-weight: 500; text-align: center; width: 100%; }
+        h1 { font-size: 24px; letter-spacing: -1px; margin: 0; font-weight: 800; text-align: center; width: 100%; color: var(--text-primary); }
+        .subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 5px; font-weight: 500; text-align: center; width: 100%; }
         .admin-tag { color: var(--danger); font-weight: 700; font-size: 12px; margin-left: 4px; vertical-align: middle; }
 
-        .room-nav { display: flex; gap: 10px; margin-bottom: 20px; background: #e0e0e0; padding: 4px; border-radius: 10px; }
-        .nav-btn { flex: 1; padding: 8px; border-radius: 8px; border: none; background: transparent; font-weight: 600; color: #666; transition: all 0.2s; }
-        .nav-btn.active { background: var(--bfr-black); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .room-nav { display: flex; gap: 10px; margin-bottom: 20px; background: var(--nav-bg); padding: 4px; border-radius: 10px; }
+        .nav-btn { flex: 1; padding: 8px; border-radius: 8px; border: none; background: transparent; font-weight: 600; color: var(--text-secondary); transition: all 0.2s; }
+        .nav-btn.active { background: var(--nav-item-active-bg); color: var(--nav-item-active-text); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
         .room-card { 
-          background: white; border-radius: 16px; padding: 15px 20px; margin-bottom: 15px; 
+          background: var(--bg-card); border-radius: 16px; padding: 15px 20px; margin-bottom: 15px; 
           box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; 
           cursor: pointer;
+          border: 1px solid var(--border-color);
         }
-        .room-info h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 700; word-break: break-word; }
-        .room-users { font-size: 14px; color: #888; display: flex; align-items: center; gap: 6px; font-weight: 600; margin-top: 5px; }
+        .room-info h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 700; word-break: break-word; color: var(--text-primary); }
+        .room-users { font-size: 14px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; font-weight: 600; margin-top: 5px; }
         .room-actions { display: flex; align-items: center; gap: 20px; }
-        .room-total-preview { font-weight: 800; font-size: 16px; color: #000; }
+        .room-total-preview { font-weight: 800; font-size: 16px; color: var(--text-primary); }
 
-        .btn-create-room { width: 100%; background: white; border: 2px dashed #ccc; color: #666; padding: 15px; border-radius: 16px; font-weight: 700; margin-bottom: 15px; }
-        .btn-admin-login { background: transparent; border: 1px solid #ddd; color: #555; padding: 8px 15px; border-radius: 20px; font-size: 12px; margin: 0 auto; font-weight: 600; display: block; }
-        .btn-admin-login.is-logged { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+        .btn-create-room { width: 100%; background: var(--bg-card); border: 2px dashed var(--border-color); color: var(--text-secondary); padding: 15px; border-radius: 16px; font-weight: 700; margin-bottom: 15px; }
+        .btn-admin-login { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 8px 15px; border-radius: 20px; font-size: 12px; margin: 0 auto; font-weight: 600; display: block; }
+        .btn-admin-login.is-logged { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
 
         .room-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-back { background: #ddd; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
-        .room-title-display { font-size: 16px; font-weight: 800; text-transform: uppercase; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-back { background: var(--btn-secondary-border); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; gap: 4px; color: var(--text-primary); }
+        .room-title-display { font-size: 16px; font-weight: 800; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); }
 
-        .card-expand { background: var(--bg-card); border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
-        .card-header { padding: 15px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; }
+        .card-expand { background: var(--bg-card); border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; border: 1px solid var(--border-color); }
+        .card-header { padding: 15px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; color: var(--text-primary); }
         .card-body { height: 0; opacity: 0; padding: 0 18px; transition: all 0.3s; pointer-events: none; }
         .card-expand.open .card-body { height: auto; min-height: 160px; opacity: 1; padding-bottom: 18px; pointer-events: auto; }
         .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
-        .btn-add { width: 100%; background: var(--bfr-black); color: white; padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
+        .btn-add { width: 100%; background: var(--btn-primary-bg); color: var(--btn-primary-text); padding: 12px; border-radius: 8px; border: none; font-weight: 600; }
 
         :global(.item-card) { 
-          background: #ffffff !important; 
+          background: var(--bg-card) !important; 
           padding: 12px 15px !important; 
           border-radius: 14px !important; 
           margin-bottom: 10px !important; 
-          border: 1px solid #f0f0f0 !important;
-          border-left: 8px solid #000 !important;
+          border: 1px solid var(--border-color) !important;
+          border-left: 8px solid var(--text-primary) !important;
           box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important; 
           display: flex !important;
           justify-content: space-between !important;
@@ -571,25 +584,25 @@ export default function Home() {
         }
 
         .info-container { display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-right: 15px; gap: 2px; }
-        .item-nome { font-weight: 800; font-size: 15px; color: #000; letter-spacing: -0.4px; line-height: 1.1; }
-        .item-details { color: #888; font-size: 12px; font-weight: 500; }
-        .item-total { font-weight: 900; font-size: 16px; color: #000; margin-top: 2px; }
+        .item-nome { font-weight: 800; font-size: 15px; color: var(--text-primary); letter-spacing: -0.4px; line-height: 1.1; }
+        .item-details { color: var(--text-secondary); font-size: 12px; font-weight: 500; }
+        .item-total { font-weight: 900; font-size: 16px; color: var(--text-primary); margin-top: 2px; }
 
         .controls-container { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .arrow-stack { display: flex; flex-direction: column; background: #f8f8f8; border-radius: 8px; width: 28px; height: 40px; justify-content: space-evenly; align-items: center; border: 1px solid #f0f0f0; }
-        .arrow-stack button { border: none; background: transparent; color: #aaa; padding: 2px; width: 100%; display: flex; justify-content: center; cursor: pointer; transition: color 0.2s; }
-        .arrow-stack button:hover { color: #000; }
-        .btn-edit-square { width: 34px; height: 34px; background: #f8f8f8; border-radius: 8px; border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: center; color: #888; cursor: pointer; transition: all 0.2s; }
-        .btn-edit-square:hover { background: #eee; color: #000; }
+        .arrow-stack { display: flex; flex-direction: column; background: var(--bg-hover); border-radius: 8px; width: 28px; height: 40px; justify-content: space-evenly; align-items: center; border: 1px solid var(--border-color); }
+        .arrow-stack button { border: none; background: transparent; color: var(--text-secondary); padding: 2px; width: 100%; display: flex; justify-content: center; cursor: pointer; transition: color 0.2s; }
+        .arrow-stack button:hover { color: var(--text-primary); }
+        .btn-edit-square { width: 34px; height: 34px; background: var(--bg-hover); border-radius: 8px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+        .btn-edit-square:hover { background: var(--border-color); color: var(--text-primary); }
         
-        .qty-pill { display: flex; align-items: center; background: #f8f8f8; border-radius: 8px; padding: 3px 5px; height: 34px; box-sizing: border-box; gap: 4px; border: 1px solid #f0f0f0; }
-        .qty-btn { width: 24px; height: 24px; background: white; border: 1px solid #eee; border-radius: 6px; font-weight: 700; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; }
+        .qty-pill { display: flex; align-items: center; background: var(--bg-hover); border-radius: 8px; padding: 3px 5px; height: 34px; box-sizing: border-box; gap: 4px; border: 1px solid var(--border-color); }
+        .qty-btn { width: 24px; height: 24px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; font-weight: 700; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); cursor: pointer; color: var(--text-primary); display: flex; align-items: center; justify-content: center; }
         .qty-btn:active { transform: scale(0.92); }
-        .qty-value { min-width: 18px; text-align: center; font-weight: 800; font-size: 13px; color: #000; }
+        .qty-value { min-width: 18px; text-align: center; font-weight: 800; font-size: 13px; color: var(--text-primary); }
 
-        .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 420px; background: var(--bfr-black); color: white; padding: 12px 20px; border-radius: 14px; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+        .total-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 420px; background: var(--dock-bg); color: var(--dock-text); padding: 12px 20px; border-radius: 14px; justify-content: space-between; align-items: center; z-index: 100; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
         .total-value { font-size: 20px; font-weight: 700; }
-        .btn-trash-dock { background: #333; color: #ff6b6b; border: none; padding: 8px; border-radius: 8px; font-size: 18px; transition: transform 0.2s; }
+        .btn-trash-dock { background: var(--dock-btn-bg); color: #ff6b6b; border: none; padding: 8px; border-radius: 8px; font-size: 18px; transition: transform 0.2s; }
         .btn-trash-dock:active { transform: scale(0.9); }
 
 
@@ -628,13 +641,13 @@ function PasswordModal({ isOpen, onClose, onSuccess }) {
       </div>
       <style jsx>{`
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-content { background: var(--bg-card); padding: 20px; border-radius: 12px; width: 90%; max-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: var(--text-primary); }
         h3 { margin-top: 0; margin-bottom: 15px; text-align: center; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-size: 16px; }
+        input { width: 100%; padding: 10px; border: 1px solid var(--input-border); border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-size: 16px; background: var(--input-bg); color: var(--text-primary); }
         .modal-actions { display: flex; gap: 10px; }
         button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .btn-confirm { background: #000; color: white; }
-        .btn-cancel { background: #eee; color: #333; }
+        .btn-confirm { background: var(--btn-primary-bg); color: var(--btn-primary-text); }
+        .btn-cancel { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
       `}</style>
     </div>
   );
@@ -660,7 +673,7 @@ function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem, onDel
         </div>
         <div className="rank-total">
           {BRL.format(player.total)}
-          <span style={{ fontSize: '10px', color: '#999', marginLeft: '6px' }}>{isOpen ? '▲' : '▼'}</span>
+          <span style={{ fontSize: '10px', color: 'var(--text-secondary)', marginLeft: '6px' }}>{isOpen ? '▲' : '▼'}</span>
         </div>
       </div>
       {isOpen && (
@@ -773,28 +786,28 @@ function RankingCard({ player, index, isAdmin, onDeleteUser, onUpdateItem, onDel
         </div>
       )}
       <style jsx>{`
-        .rank-card { background: white; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #f0f0f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .rank-card { background: var(--bg-card); border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .rank-header { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
-        .rank-header:active { background: #f9f9f9; }
+        .rank-header:active { background: var(--bg-hover); }
         .rank-info { display: flex; align-items: center; gap: 10px; }
         .rank-pos { font-weight: 900; width: 25px; font-size: 18px; text-align: center; }
-        .rank-name { font-weight: 600; font-size: 15px; }
-        .rank-total { font-weight: 800; font-size: 15px; color: #333; display: flex; align-items: center; }
-        .rank-details { background: #fcfcfc; border-top: 1px solid #eee; }
-        .detail-item-container { border-bottom: 1px solid #eee; }
-        .detail-item { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555; }
+        .rank-name { font-weight: 600; font-size: 15px; color: var(--text-primary); }
+        .rank-total { font-weight: 800; font-size: 15px; color: var(--text-primary); display: flex; align-items: center; }
+        .rank-details { background: var(--bg-hover); border-top: 1px solid var(--border-color); }
+        .detail-item-container { border-bottom: 1px solid var(--border-color); }
+        .detail-item { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); }
         
-        .admin-edit-form { padding: 15px; display: flex; flex-direction: column; gap: 8px; background: #fff9f9; }
-        .admin-actions { padding: 12px; border-top: 1px dashed #eee; display: flex; justify-content: center; align-items: center; }
-        .btn-delete-user { background: #fff5f5; color: #ff4444; border: 1px solid #ffebeb; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .btn-admin-small { background: #f4f4f4; border: none; padding: 6px; border-radius: 6px; color: #666; cursor: pointer; display: flex; align-items: center; }
-        .btn-save-admin { background: var(--bfr-black); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; flex: 1; cursor: pointer; }
-        .btn-cancel-admin { background: #eee; color: #666; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .admin-edit-form { padding: 15px; display: flex; flex-direction: column; gap: 8px; background: var(--bg-hover); }
+        .admin-actions { padding: 12px; border-top: 1px dashed var(--border-color); display: flex; justify-content: center; align-items: center; }
+        .btn-delete-user { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .btn-admin-small { background: var(--bg-hover); border: none; padding: 6px; border-radius: 6px; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; }
+        .btn-save-admin { background: var(--btn-primary-bg); color: var(--btn-primary-text); border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; flex: 1; cursor: pointer; }
+        .btn-cancel-admin { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-        .pos-1 { color: #FFD700; }
-        .pos-2 { color: #C0C0C0; }
-        .pos-3 { color: #CD7F32; }
-        .pos-n { color: #ccc; font-size: 14px; }
+        .pos-1 { color: var(--gold); }
+        .pos-2 { color: var(--silver); }
+        .pos-3 { color: var(--bronze); }
+        .pos-n { color: var(--text-secondary); font-size: 14px; }
       `}</style>
     </div>
   );

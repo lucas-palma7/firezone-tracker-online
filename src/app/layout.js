@@ -1,4 +1,5 @@
 import './globals.css'
+import { ThemeProvider } from './ThemeProvider'
 
 export const metadata = {
   title: 'Firezone Hub',
@@ -18,7 +19,11 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-br" suppressHydrationWarning={true}>
-      <body suppressHydrationWarning={true}>{children}</body>
+      <body suppressHydrationWarning={true}>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

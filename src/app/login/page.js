@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Login() {
   const [name, setName] = useState('');
@@ -31,6 +32,9 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      <div className="theme-toggle-wrapper">
+        <ThemeToggle />
+      </div>
       <motion.div
         className="login-card"
         initial={{ opacity: 0, y: 20 }}
@@ -65,11 +69,17 @@ export default function Login() {
           justify-content: center;
           align-items: center;
           min-height: 100vh;
-          background: #f5f5f5;
+          background: var(--bg-page);
           padding: 20px;
+          position: relative;
+        }
+        .theme-toggle-wrapper {
+          position: absolute;
+          top: 20px;
+          right: 20px;
         }
         .login-card {
-          background: white;
+          background: var(--bg-card);
           padding: 40px;
           border-radius: 24px;
           box-shadow: 0 10px 40px rgba(0,0,0,0.1);
@@ -79,6 +89,7 @@ export default function Login() {
           flex-direction: column;
           align-items: center;
           text-align: center;
+          border: 1px solid var(--border-color);
         }
         .bfr-logo {
           width: 120px;
@@ -95,9 +106,10 @@ export default function Login() {
           letter-spacing: -1px;
           text-align: center;
           width: 100%;
+          color: var(--text-primary);
         }
         .subtitle {
-          color: #666;
+          color: var(--text-secondary);
           margin-bottom: 32px;
           font-weight: 500;
           text-align: center;
@@ -111,21 +123,23 @@ export default function Login() {
         input {
           padding: 16px;
           border-radius: 12px;
-          border: 2px solid #eee;
+          border: 2px solid var(--input-border);
           font-size: 16px;
           transition: border-color 0.2s;
           outline: none;
           text-align: center;
+          background: var(--input-bg);
+          color: var(--text-primary);
         }
         input:focus {
-          border-color: #000;
+          border-color: var(--text-primary);
         }
         button {
           padding: 16px;
           border-radius: 12px;
           border: none;
-          background: #000;
-          color: white;
+          background: var(--btn-primary-bg);
+          color: var(--btn-primary-text);
           font-size: 16px;
           font-weight: 700;
           cursor: pointer;
