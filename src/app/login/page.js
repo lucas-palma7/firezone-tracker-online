@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import ThemeToggle from '../components/ThemeToggle';
+import ThemeToggle from '@/components/common/ThemeToggle';
 import { createUser, saveUser, getUser } from '@/services/auth.service';
 
 /**
