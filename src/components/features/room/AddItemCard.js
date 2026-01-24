@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { formatCurrencyInput } from '@/utils/currency';
 
 /**
@@ -20,57 +20,69 @@ import { formatCurrencyInput } from '@/utils/currency';
  * <AddItemCard onAdd={(name, price, qty) => addItem(name, price, qty)} />
  */
 export default function AddItemCard({ onAdd }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [itemName, setItemName] = useState('');
-    const [itemPrice, setItemPrice] = useState('R$ 0,00');
-    const [itemQty, setItemQty] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
+  const [itemName, setItemName] = useState('');
+  const [itemPrice, setItemPrice] = useState('R$ 0,00');
+  const [itemQty, setItemQty] = useState(1);
+  const itemNameInputRef = useRef(null);
 
-    /**
-     * Handles adding the item and resetting the form
-     */
-    const handleAdd = () => {
-        onAdd(itemName, itemPrice, itemQty);
-        // Reset form
-        setItemName('');
-        setItemPrice('R$ 0,00');
-        setItemQty(1);
-        setIsOpen(false);
-    };
+  /**
+   * Auto-focus the Item field when the card opens
+   */
+  useEffect(() => {
+    if (isOpen && itemNameInputRef.current) {
+      itemNameInputRef.current.focus();
+    }
+  }, [isOpen]);
 
-    return (
-        <div className={`card-expand ${isOpen ? 'open' : ''}`}>
-            <div className="card-header" onClick={() => setIsOpen(!isOpen)}>
-                <span>Adicionar Item</span>
-                <span>{isOpen ? '-' : '+'}</span>
-            </div>
-            <div className="card-body">
-                <input
-                    type="text"
-                    placeholder="Item (ex: Cerveja)"
-                    value={itemName}
-                    onChange={(e) => setItemName(e.target.value)}
-                />
-                <div className="input-group" style={{ marginTop: '10px' }}>
-                    <input
-                        type="text"
-                        placeholder="R$ 0,00"
-                        inputMode="numeric"
-                        value={itemPrice}
-                        onChange={(e) => setItemPrice(formatCurrencyInput(e.target.value))}
-                    />
-                    <input
-                        type="number"
-                        style={{ width: '80px', textAlign: 'center' }}
-                        value={itemQty}
-                        onChange={(e) => setItemQty(parseInt(e.target.value) || 1)}
-                    />
-                </div>
-                <button className="btn-add" onClick={handleAdd}>
-                    Adicionar
-                </button>
-            </div>
+  /**
+   * Handles adding the item and resetting the form
+   */
+  const handleAdd = () => {
+    onAdd(itemName, itemPrice, itemQty);
+    // Reset form
+    setItemName('');
+    setItemPrice('R$ 0,00');
+    setItemQty(1);
+    setIsOpen(false);
+  };
 
-            <style jsx>{`
+  return (
+    <div className={`card-expand ${isOpen ? 'open' : ''}`}>
+      <div className="card-header" onClick={() => setIsOpen(!isOpen)}>
+        <span>Adicionar Item</span>
+        <span>{isOpen ? '-' : '+'}</span>
+      </div>
+      <div className="card-body">
+        <input
+          ref={itemNameInputRef}
+          type="text"
+          placeholder="Item (ex: Cerveja)"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
+        />
+        <div className="input-group" style={{ marginTop: '10px' }}>
+          <input
+            type="text"
+            placeholder="R$ 0,00"
+            inputMode="numeric"
+            value={itemPrice}
+            onChange={(e) => setItemPrice(formatCurrencyInput(e.target.value))}
+          />
+          <input
+            type="number"
+            inputMode="numeric"
+            style={{ width: '80px', textAlign: 'center' }}
+            value={itemQty}
+            onChange={(e) => setItemQty(parseInt(e.target.value) || 1)}
+          />
+        </div>
+        <button className="btn-add" onClick={handleAdd}>
+          Adicionar
+        </button>
+      </div>
+
+      <style jsx>{`
         .card-expand {
           background: var(--bg-card);
           border-radius: 14px;
@@ -89,10 +101,6 @@ export default function AddItemCard({ onAdd }) {
           font-weight: 600;
           color: var(--text-primary);
           user-select: none;
-        }
-
-        .card-header:hover {
-          background: var(--bg-hover);
         }
 
         .card-body {
@@ -134,6 +142,6 @@ export default function AddItemCard({ onAdd }) {
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 }

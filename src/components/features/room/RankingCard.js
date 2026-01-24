@@ -131,7 +131,8 @@ export default function RankingCard({ player, index, isAdmin, onDeleteUser, onUp
                                                 id={`admin-edit-qty-${i.id}`}
                                                 placeholder="Qtd"
                                                 type="number"
-                                                style={{ width: '60px' }}
+                                                inputMode="numeric"
+                                                style={{ width: '60px', textAlign: 'center' }}
                                             />
                                         </div>
                                         <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
@@ -181,8 +182,9 @@ export default function RankingCard({ player, index, isAdmin, onDeleteUser, onUp
                                             id={`admin-add-qty-${player.id}`}
                                             placeholder="Qtd"
                                             type="number"
+                                            inputMode="numeric"
                                             defaultValue="1"
-                                            style={{ width: '60px' }}
+                                            style={{ width: '60px', textAlign: 'center' }}
                                         />
                                     </div>
                                     <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
